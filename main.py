@@ -14,12 +14,13 @@ pygame.init()
 
 
 coords_nest = (const.WIDTH / 2, const.HEIGHT / 2)
+steps_per_sec = 25
 num_ants = 50
-num_cookies = 5
+num_cookies = 2
 min_size_cookie = 5
-max_size_cookie = 20
-ant_velocity = 5
-carring_velocity = 2
+max_size_cookie = 10
+ant_velocity = 2
+carring_velocity = 1
 ants = []
 cookies = []
 distances = [0 for x in range(num_cookies)]
@@ -59,80 +60,121 @@ for cookie in cookies:
     cookie.set_angle_to_nest(angle)
 
 
-def get_distance(x1, y1, x2, y2):
-    dx = abs(x1 -x2)
-    dy = abs(y1 - y2)
+def get_distance(ant, cookie):
+    dx = abs(ant.get_pos()[0] - cookie.get_pos()[0])
+    dy = abs(ant.get_pos()[1] - cookie.get_pos()[1])
     return math.sqrt(pow(dx,2) + pow(dy,2))
 
 
+def get_angle(ant, cookie):
+    dx = ant.get_pos()[0] - cookie.get_pos()[0]
+    dy = ant.get_pos()[1] - cookie.get_pos()[1]
+    angle = math.degrees(math.atan(abs(dy) / abs(dx)))
+    if (dx > 0 and dy > 0):
+        angle = 180 - angle
+    elif (dx > 0 and dy < 0):
+        angle += 180
+    elif (dx < 0 and dy < 0):
+        angle = 360 - angle
+    return angle
 
 
 def get_distances(cookies, ants):
     for ant in ants:
-        if ant.isWandering() or ant.isApproaching():
-            distances = []
+        if ant.is_wandering() or ant.is_approaching():
+            distances = {}
             for cookie in cookies:
-                distances.append(get_distance(ant.get_pos()[0], ant.get_pos()[1], cookie.get_pos()[0], cookie.get_pos()[1]))
-            ant.set_distances(distances)
+                distances[cookie] = (get_distance(ant, cookie))
+            ant.set_ant_cookies_distances(distances)
 
 
 def update_ants():
     for ant in ants:
         ant.set_new_pos()
-        if ant.isWandering():
+
+        if ant.is_wandering():
             ant.set_velocity(ant_velocity)
-            for i, d in enumerate(ant.get_distances()):
-                if d < cookies[i].attraction and cookies[i].isSitting():
-                    ant.setApproaching()
-                    ant.set_approached_cookie(i, cookies[i])
-                    ant.get_approached_cookie().add_approaching_ant(ant)
-                    dx = ant.get_pos()[0] - cookies[i].get_pos()[0]
-                    dy = ant.get_pos()[1] - cookies[i].get_pos()[1]
-                    angle = math.degrees(math.atan(abs(dy) / abs(dx)))
-                    if (dx > 0 and dy > 0):
-                        angle = 180 - angle
-                    elif (dx > 0 and dy < 0):
-                        angle += 180
-                    elif (dx < 0 and dy < 0):
-                        angle = 360 - angle
 
-                    ant.set_angle(angle)
+            for cookie in cookies:
+                if get_distance(ant, cookie) < cookie.attraction and cookie.is_sitting():
+                    ant.set_approaching()
+                    ant.set_approached_cookie(cookie)
+                    cookie.add_approaching_ant(ant)
+                    ant.set_angle(get_angle(ant, cookie))
+                continue
 
-                    continue
 
-        elif ant.isApproaching():
-            if ant.get_distances()[ant.get_approached_cookie_id()] <= ant.get_approached_cookie().get_radius():
-                ant.setWaiting()
-                ant.get_approached_cookie().add_waiting_ant(ant)
-                ant.get_approached_cookie().get_approaching_ants().remove(ant)
+
+        elif ant.is_approaching():
+
+            if get_distance(ant, ant.get_approached_cookie()) <= ant.get_approached_cookie().get_radius():
+                ant.set_waiting()
                 ant.set_velocity(0)
+
+                x = ant.get_approached_cookie().get_pos()[0] - math.cos(math.radians(ant.angle)) * ant.get_approached_cookie().get_radius()
+                y = ant.get_approached_cookie().get_pos()[1] + math.sin(math.radians(ant.angle)) * ant.get_approached_cookie().get_radius()
+                ant.set_pos(x, y)
+
+                ant.get_approached_cookie().remove_approaching_ant(ant)
+                ant.get_approached_cookie().add_waiting_ant(ant)
                 ant.get_approached_cookie().inc_occupancy()
                 ant.get_approached_cookie().inc_attraction()
-                ant.get_approached_cookie().add_waiting_ant(ant)
 
-        elif ant.isCarring():
+
+        elif ant.is_waiting():
+            if ant.get_approached_cookie().is_moving():
+                ant.set_carring()
+                ant.set_angle(ant.get_approached_cookie().get_angle_to_nest())
+
+
+        elif ant.is_carring():
             ant.set_angle(ant.get_approached_cookie().get_angle_to_nest())
             ant.set_velocity(carring_velocity)
 
 
 def update_cookies():
     for cookie in cookies:
-        if cookie.isSitting() and cookie.get_occupancy() >= cookie.get_size():
-            cookie.setMoving()
-            cookie.set_velocity(carring_velocity)
-            cookie.set_occupancy(cookie.get_size())
-            for ant in cookie.get_approaching_ants():
-                ant.setWandering()
-            for ant in cookie.get_waiting_ants():
-                ant.setCarring()
+      #  for ant in ants:
+           # if get_distance(ant, cookie) <= cookie.attraction and cookie.is_sitting():
+            #    cookie.add_approaching_ant(ant)
 
-        elif cookie.isMoving():
-            cookie.set_new_pos()
-            if get_distance(cookie.get_pos()[0], cookie.get_pos()[1], coords_nest[0], coords_nest[1]) < cookie.get_velocity():
-                cookie.setFinished()
+       # for ant in cookie.get_approaching_ants():
+        #    if get_distance(ant, cookie) <= cookie.get_radius():
+         #       ant.set_waiting()
+          #      cookie.remove_approaching_ant(ant)
+           #     cookie.add_waiting_ant(ant)
+
+
+
+
+        if cookie.is_sitting():
+          if cookie.get_occupancy() >= cookie.get_size():
+                cookie.set_moving()
+                cookie.set_velocity(carring_velocity)
+                cookie.set_occupancy(cookie.get_size())
+                for ant in cookie.get_approaching_ants():
+                    ant.set_wandering()
                 for ant in cookie.get_waiting_ants():
-                    ant.setWandering()
-                    ant.set_angle(random.randint(1,360))
+                    ant.set_carring()
+                    cookie.add_carring_ant(ant)
+                cookie.clear_approaching_ants()
+                cookie.clear_waiting_ants()
+
+        elif cookie.is_moving():
+            cookie.set_new_pos()
+            if math.sqrt(pow(abs(cookie.get_pos()[0] - coords_nest[0]),2) + pow(abs(cookie.get_pos()[1] - coords_nest[1]),2)) < cookie.get_velocity():
+                cookie.set_finished()
+                #x = coords_nest[0] - math.cos(math.radians(cookie.angle_to_nest)) * nest_radius
+                #y = coords_nest[1] + math.sin(math.radians(cookie.angle_to_nest)) * nest_radius
+                cookie.set_pos(coords_nest[0], coords_nest[1])
+                for ant in cookie.get_carring_ants():
+                    ant.set_wandering()
+                    ant.set_angle(random.randint(1, 360))
+                    ant.clear_approached_cookie()
+                    #ant.clear_approached_cookie_id()
+                cookie.clear_carring_ants()
+
+
 
 
 
@@ -146,7 +188,7 @@ def draw(win):
     win.fill(const.WHITE)
 
     for cookie in cookies:
-        if cookie.isSitting():
+        if cookie.is_sitting():
             cookie.draw_attraction_area(win)
 
     win.fill(const.LIGHTGREY, (const.WIDTH, 0, const.WIDTH_SIDEBAR, const.HEIGHT))
@@ -165,11 +207,18 @@ def main(win):
     run = True
 
     while run:
+
         draw(win)
         get_distances(cookies, ants)
         update_ants()
         update_cookies()
-        time.sleep(0.1)
+        time.sleep(1/steps_per_sec)
+
+        for i, cookie in enumerate(cookies):
+            print(f"{i} Approaching: {len(cookie.get_carring_ants())}")
+            print(f"{i} Waiting: {len(cookie.get_waiting_ants())}")
+            print(f"{i} Carring: {len(cookie.get_carring_ants())}")
+
 
 
         for event in pygame.event.get():

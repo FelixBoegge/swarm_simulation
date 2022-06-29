@@ -8,7 +8,7 @@ pygame.init()
 ANT_SIZE = 2
 
 class Ant:
-    def __init__(self, x, y, angle, velocity, distances = [], wandering = True, approaching = False, waiting = False, carring = False, app_cookie = None):
+    def __init__(self, x, y, angle, velocity, distances = {}, wandering = True, approaching = False, waiting = False, carring = False, app_cookie = None, app_cookie_id = None):
         self.x = x
         self.y = y
         self.angle = angle
@@ -19,46 +19,47 @@ class Ant:
         self.waiting = waiting
         self.carring = carring
         self.app_cookie = app_cookie
+        self.app_cookie_id = app_cookie_id
 
 
-    def isWandering(self):
+    def is_wandering(self):
         return self.wandering
 
 
-    def isApproaching(self):
+    def is_approaching(self):
         return self.approaching
 
 
-    def isWaiting(self):
+    def is_waiting(self):
         return self.waiting
 
 
-    def isCarring(self):
+    def is_carring(self):
         return self.carring
 
 
-    def setWandering(self):
+    def set_wandering(self):
         self.wandering = True
         self.approaching = False
         self.waiting = False
         self.carring = False
 
 
-    def setApproaching(self):
+    def set_approaching(self):
         self.wandering = False
         self.approaching = True
         self.waiting = False
         self.carring = False
 
 
-    def setWaiting(self):
+    def set_waiting(self):
         self.wandering = False
         self.approaching = False
         self.waiting = True
         self.carring = False
 
 
-    def setCarring(self):
+    def set_carring(self):
         self.wandering = False
         self.approaching = False
         self.waiting = False
@@ -69,24 +70,38 @@ class Ant:
         return (self.x, self.y)
 
 
-    def set_distances(self, distances):
+    def set_pos(self, x, y):
+        self.x, self.y = x, y
+
+
+    def set_ant_cookies_distances(self, distances):
         self.distances = distances
 
 
-    def get_distances(self):
+    def get_ant_cookies_distances(self):
         return self.distances
 
 
-    def set_approached_cookie(self, i, cookie):
-        self.app_cookie = (i, cookie)
+    def set_approached_cookie(self, cookie):
+        self.app_cookie = cookie
+
+
+    def set_approached_cookie_id(self, id):
+        self.app_cookie_id = id
 
 
     def get_approached_cookie(self):
-        return self.app_cookie[1]
+        return self.app_cookie
 
 
     def get_approached_cookie_id(self):
-        return self.app_cookie[0]
+        return self.app_cookie_id
+
+    def clear_approached_cookie(self):
+        self.app_cookie = None
+
+    def clear_approached_cookie_id(self):
+        self.app_cookie_id = None
 
 
     def set_angle(self, new_angle):
@@ -125,16 +140,19 @@ class Ant:
 
 
     def draw_ant(self, win):
-        if self.isWandering():
+        if self.is_wandering():
             pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
 
-        elif self.isApproaching():
+        elif self.is_approaching():
             pygame.draw.circle(win, const.YELLOW, (self.get_pos()), ANT_SIZE)
 
-        elif self.isWaiting():
+        elif self.is_waiting():
             pygame.draw.circle(win, const.RED, (self.get_pos()), ANT_SIZE)
 
-        elif self.isCarring():
+        elif self.is_carring():
             pygame.draw.circle(win, const.PURPLE, (self.get_pos()), ANT_SIZE)
+
+        elif self.test():
+            pygame.draw.circle(win, const.CYAN, (self.get_pos()), ANT_SIZE)
 
 
