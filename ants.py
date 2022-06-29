@@ -1,5 +1,6 @@
 import pygame
 import math
+import ant_trail as at
 import parameters as const
 
 
@@ -8,11 +9,12 @@ pygame.init()
 ANT_SIZE = 2
 
 class Ant:
-    def __init__(self, x, y, angle, velocity, distances = {}, wandering = True, approaching = False, waiting = False, carring = False, app_cookie = None, app_cookie_id = None):
+    def __init__(self, x, y, angle, velocity, trail = at.AntTrail(const.length_trail), distances = {}, wandering = True, approaching = False, waiting = False, carring = False, app_cookie = None, app_cookie_id = None):
         self.x = x
         self.y = y
         self.angle = angle
         self.velocity = velocity
+        self.trail = trail
         self.distances = distances
         self.wandering = wandering
         self.approaching = approaching
@@ -20,6 +22,8 @@ class Ant:
         self.carring = carring
         self.app_cookie = app_cookie
         self.app_cookie_id = app_cookie_id
+
+        self.trail.add((self.x, self.y))
 
 
     def is_wandering(self):
@@ -137,11 +141,16 @@ class Ant:
             self.y = const.HEIGHT - (self.y - const.HEIGHT)
             self.angle = 180 - (self.angle - 180)
 
+        self.trail.add((self.x, self.y))
+
 
 
     def draw_ant(self, win):
         if self.is_wandering():
             pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
+            for x in self.trail.get_trail():
+                if x != None:
+                    pygame.draw.circle(win, const.BLACK, x, ANT_SIZE / 2)
 
         elif self.is_approaching():
             pygame.draw.circle(win, const.YELLOW, (self.get_pos()), ANT_SIZE)
@@ -151,8 +160,3 @@ class Ant:
 
         elif self.is_carring():
             pygame.draw.circle(win, const.PURPLE, (self.get_pos()), ANT_SIZE)
-
-        elif self.test():
-            pygame.draw.circle(win, const.CYAN, (self.get_pos()), ANT_SIZE)
-
-

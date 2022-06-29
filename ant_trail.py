@@ -1,7 +1,7 @@
-class CircularQueue:
+class AntTrail:
     def __init__(self, capacity):
         self.capacity = capacity
-        self.q = [0] * capacity
+        self.q = [None] * capacity
         self.head = 0
 
 
@@ -12,5 +12,5 @@ class CircularQueue:
             self.head = 0
 
 
-    def get_circular_queue(self):
-        pass
+    def get_trail(self):
+        return self.q[self.head-1:] + self.q[:self.head-1]

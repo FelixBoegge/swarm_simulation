@@ -15,3 +15,4 @@ WIDTH = 800
 HEIGHT = 600
 WIDTH_SIDEBAR = 200
 
+length_trail = 50

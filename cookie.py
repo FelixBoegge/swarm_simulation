@@ -8,12 +8,12 @@ pygame.init()
 
 
 class Cookie:
-    def __init__(self, x, y, size, attraction, occupancy, velocity = 0, angle_to_nest=0, approaching_ants = [], waiting_ants = [], carring_ants = [], sitting=True, moving=False, finished=False):
+    def __init__(self, x, y, size, occupancy = 0, velocity = 0, angle_to_nest=0, approaching_ants = [], waiting_ants = [], carring_ants = [], sitting=True, moving=False, finished=False):
         self.x = x
         self.y = y
         self.size = size
         self.radius = math.sqrt(self.size / math.pi) * 3
-        self.attraction = attraction
+        self.attraction = self.size + 50
         self.occupancy = occupancy
         self.velocity = velocity
         self.approaching_ants = approaching_ants
@@ -81,6 +81,10 @@ class Cookie:
 
     def get_size(self):
         return self.size
+
+
+    def get_attraction(self):
+        return self.attraction
 
 
     def get_occupancy(self):
