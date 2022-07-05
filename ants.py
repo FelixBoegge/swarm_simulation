@@ -1,116 +1,75 @@
 import pygame
 import math
 import ant_trail as at
-import parameters as const
+import constants as const
 
 
 pygame.init()
 
-ANT_SIZE = 2
+ANT_SIZE = 3
+STEP_COUNTER = 10
 
 class Ant:
-    def __init__(self, x, y, angle, velocity, trail = at.AntTrail(const.length_trail), distances = {}, wandering = True, approaching = False, waiting = False, carring = False, app_cookie = None, app_cookie_id = None):
+    def __init__(self, id, x, y, angle, velocity, trail = at.AntTrail(const.LENGTH_TRAIL), status = 'wandering', app_cookie = None):
+        self.id = id
         self.x = x
         self.y = y
         self.angle = angle
         self.velocity = velocity
         self.trail = trail
-        self.distances = distances
-        self.wandering = wandering
-        self.approaching = approaching
-        self.waiting = waiting
-        self.carring = carring
+        self.status = status
         self.app_cookie = app_cookie
-        self.app_cookie_id = app_cookie_id
+        self.step_counter = 0
 
         self.trail.add((self.x, self.y))
 
+    def __str__(self):
+        return f"ID: {self.id} | status: {self.status} | approached cookie: ({self.app_cookie})"
+
 
     def is_wandering(self):
-        return self.wandering
-
+        return self.status == 'wandering'
 
     def is_approaching(self):
-        return self.approaching
-
+        return self.status == 'approaching'
 
     def is_waiting(self):
-        return self.waiting
-
+        return self.status == 'waiting'
 
     def is_carring(self):
-        return self.carring
-
+        return self.status == 'carring'
 
     def set_wandering(self):
-        self.wandering = True
-        self.approaching = False
-        self.waiting = False
-        self.carring = False
-
+        self.status = 'wandering'
 
     def set_approaching(self):
-        self.wandering = False
-        self.approaching = True
-        self.waiting = False
-        self.carring = False
-
+        self.status = 'approaching'
 
     def set_waiting(self):
-        self.wandering = False
-        self.approaching = False
-        self.waiting = True
-        self.carring = False
-
+        self.status = 'waiting'
 
     def set_carring(self):
-        self.wandering = False
-        self.approaching = False
-        self.waiting = False
-        self.carring = True
-
-
-    def get_pos(self):
-        return (self.x, self.y)
-
-
-    def set_pos(self, x, y):
-        self.x, self.y = x, y
-
-
-    def set_ant_cookies_distances(self, distances):
-        self.distances = distances
-
-
-    def get_ant_cookies_distances(self):
-        return self.distances
+        self.status = 'carring'
 
 
     def set_approached_cookie(self, cookie):
         self.app_cookie = cookie
 
-
-    def set_approached_cookie_id(self, id):
-        self.app_cookie_id = id
-
-
     def get_approached_cookie(self):
         return self.app_cookie
-
-
-    def get_approached_cookie_id(self):
-        return self.app_cookie_id
 
     def clear_approached_cookie(self):
         self.app_cookie = None
 
-    def clear_approached_cookie_id(self):
-        self.app_cookie_id = None
 
+    def get_pos(self):
+        return (self.x, self.y)
+
+    def set_pos(self, x, y):
+        self.x, self.y = x, y
 
     def set_angle(self, new_angle):
         self.angle = new_angle
-
 
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity
@@ -141,16 +100,15 @@ class Ant:
             self.y = const.HEIGHT - (self.y - const.HEIGHT)
             self.angle = 180 - (self.angle - 180)
 
-        self.trail.add((self.x, self.y))
-
+        self.trail.add(self.get_pos())
 
 
     def draw_ant(self, win):
         if self.is_wandering():
-            pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
             for x in self.trail.get_trail():
                 if x != None:
-                    pygame.draw.circle(win, const.BLACK, x, ANT_SIZE / 2)
+                    pygame.draw.circle(win, const.BLUE, x, ANT_SIZE / 2)
+            pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
 
         elif self.is_approaching():
             pygame.draw.circle(win, const.YELLOW, (self.get_pos()), ANT_SIZE)
