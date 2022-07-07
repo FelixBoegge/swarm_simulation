@@ -10,9 +10,11 @@ from cookie import Cookie
 pygame.init()
 
 
-steps_per_sec = 20
-new_ant_creation_freq = 1                           # in seconds
-new_cookie_creation_freq = 4                         # in seconds
+steps_per_sec = 25
+new_ant_creation_freq = 2                          # in seconds
+new_cookie_creation_freq = 5                         # in seconds
+num_start_ants = 10
+num_start_cookies = 2
 
 ants = []
 cookies = []
@@ -23,27 +25,11 @@ pygame.display.set_caption('swarm simulation')
 
 
 def create_cookie():
-    x = random.randint(20, const.WIDTH - 20)
-    y = random.randint(20, const.HEIGHT - 20)
-    size = random.randint(const.MIN_SIZE_COOKIE, const.MAX_SIZE_COOKIE)
-
-    dx = x - const.COORDS_NEST[0]
-    dy = y - const.COORDS_NEST[1]
-    angle = math.degrees(math.atan(abs(dy) / abs(dx)))
-    if (dx > 0 and dy > 0):
-        angle = 180 - angle
-    elif (dx > 0 and dy < 0):
-        angle += 180
-    elif (dx < 0 and dy < 0):
-        angle = 360 - angle
-
-    new_cookie = Cookie(len(cookies)+1, x, y, size, angle_to_nest=angle)
-    cookies.append(new_cookie)
+    cookies.append(Cookie(len(cookies)+1))
 
 
 def create_ant():
-    new_ant = Ant(len(ants)+1, const.COORDS_NEST[0], const.COORDS_NEST[1], random.randint(0, 359), const.ANT_VELOCITY)
-    ants.append(new_ant)
+    ants.append(Ant(len(ants)+1))
 
 
 def get_distance(ant, cookie):
@@ -78,8 +64,6 @@ def update():
                     ant.set_angle(get_angle(ant, cookie))
                     cookie.add_approaching_ant(ant)
 
-
-
         if ant.is_approaching():
             if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
                 ant.set_waiting()
@@ -93,14 +77,11 @@ def update():
                 ant.get_approached_cookie().inc_attraction()
                 ant.get_approached_cookie().inc_occupancy()
 
-
-
         if ant.is_waiting():
             if ant.get_approached_cookie().is_moving():
                 ant.set_carring()
                 ant.set_angle(ant.get_approached_cookie().get_angle_to_nest())
                 ant.set_velocity(const.CARRING_VELOCITY)
-
 
     for cookie in cookies:
         cookie.set_new_pos()
@@ -116,7 +97,8 @@ def update():
                 cookie.clear_approaching_ant()
                 for ant in cookie.get_contributing_ant():
                     ant.set_carring()
-            continue
+                    ant.set_velocity(const.CARRING_VELOCITY)
+                    ant.set_angle(cookie.get_angle_to_nest())
 
         if cookie.is_moving():
             if math.sqrt(pow(abs(cookie.get_pos()[0] - const.COORDS_NEST[0]), 2) +
@@ -126,11 +108,10 @@ def update():
                 cookie.set_velocity(0)
                 for ant in cookie.get_contributing_ant():
                     ant.set_wandering()
-                    ant.clear_approached_cookie()
                     ant.set_angle(random.randint(0, 359))
                     ant.set_velocity(const.ANT_VELOCITY)
+                    ant.clear_approached_cookie()
                 cookie.clear_contributing_ant()
-            continue
 
 
 def draw(win):
@@ -155,33 +136,31 @@ def draw(win):
 
 def main(win):
     run = True
-    create_ant()
-    x = y = z = 0
+    ant_creation_helper = cookie_creation_helper = 0
+
+    for _ in range(num_start_ants):
+        create_ant()
+    for _ in range(num_start_cookies):
+        create_cookie()
 
     while run:
 
         draw(win)
         update()
         time.sleep(1/steps_per_sec)
-        x += 1
-        y += 1
-        z += 1
-        if x == steps_per_sec * new_ant_creation_freq:
+        ant_creation_helper += 1
+        cookie_creation_helper += 1
+
+        if ant_creation_helper >= steps_per_sec * new_ant_creation_freq:
             if len(ants) < const.MAX_NUM_ANTS:
                 create_ant()
-            x = 0
+            ant_creation_helper = 0
 
-        if y == steps_per_sec * new_cookie_creation_freq:
+        if cookie_creation_helper >= steps_per_sec * new_cookie_creation_freq:
             if len(cookies) < const.MAX_NUM_COOKIES:
                 create_cookie()
-            y = 0
+            cookie_creation_helper = 0
 
-        if z == steps_per_sec * 1:
-            for ant in ants:
-                print(ant)
-                #print(ant.trail)
-                #print(ant.get_pos()[0], ant.get_pos()[1])
-            z = 0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

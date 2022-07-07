@@ -1,25 +1,34 @@
 import pygame
 import constants as const
 import math
+import random
 
 pygame.init()
 
 
 
 class Cookie:
-    def __init__(self, id, x, y, size, occupancy = 0, velocity = 0, angle_to_nest = 0, status = 'sitting', approaching_ants = [], contributing_ants = []):
+    def __init__(self, id):
         self.id = id
-        self.x = x
-        self.y = y
-        self.size = size
+        self.x = random.randint(20, const.WIDTH - 20)
+        self.y = random.randint(20, const.HEIGHT - 20)
+        self.size = random.randint(const.MIN_SIZE_COOKIE, const.MAX_SIZE_COOKIE)
         self.radius = math.sqrt(self.size / math.pi) * 3
-        self.attraction = self.size + 50
-        self.occupancy = occupancy
-        self.velocity = velocity
-        self.angle_to_nest = angle_to_nest
-        self.status = status
-        self.approaching_ants = approaching_ants
-        self.contributing_ants = contributing_ants
+        self.attraction = self.size + 20
+        self.occupancy = 0
+        self.velocity = 0
+        self.status = 'sitting'
+        self.approaching_ants = []
+        self.contributing_ants = []
+
+        angle = math.degrees(math.atan(abs(self.y - const.COORDS_NEST[1]) / abs(self.x - const.COORDS_NEST[0])))
+        if (self.x - const.COORDS_NEST[0] > 0 and self.y - const.COORDS_NEST[1] > 0):
+            angle = 180 - angle
+        elif (self.x - const.COORDS_NEST[0] > 0 and self.y - const.COORDS_NEST[1] < 0):
+            angle += 180
+        elif (self.x - const.COORDS_NEST[0] < 0 and self.y - const.COORDS_NEST[1] < 0):
+            angle = 360 - angle
+        self.angle_to_nest = angle
 
 
     def __str__(self):

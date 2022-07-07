@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import math
 import ant_trail as at
@@ -7,19 +9,17 @@ import constants as const
 pygame.init()
 
 ANT_SIZE = 3
-STEP_COUNTER = 10
 
 class Ant:
-    def __init__(self, id, x, y, angle, velocity, trail = at.AntTrail(const.LENGTH_TRAIL), status = 'wandering', app_cookie = None):
+    def __init__(self, id):
         self.id = id
-        self.x = x
-        self.y = y
-        self.angle = angle
-        self.velocity = velocity
-        self.trail = trail
-        self.status = status
-        self.app_cookie = app_cookie
-        self.step_counter = 0
+        self.x = const.COORDS_NEST[0]
+        self.y = const.COORDS_NEST[1]
+        self.angle = random.randint(0, 359)
+        self.velocity = const.ANT_VELOCITY
+        self.trail = at.AntTrail(const.LENGTH_TRAIL)
+        self.status = 'wandering'
+        self.app_cookie = None
 
         self.trail.add((self.x, self.y))
 
@@ -105,9 +105,9 @@ class Ant:
 
     def draw_ant(self, win):
         if self.is_wandering():
-            for x in self.trail.get_trail():
+            for i, x in enumerate(self.trail.get_trail()):
                 if x != None:
-                    pygame.draw.circle(win, const.BLUE, x, ANT_SIZE / 2)
+                    pygame.draw.circle(win, ((255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL), x, ANT_SIZE / 2)
             pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
 
         elif self.is_approaching():
