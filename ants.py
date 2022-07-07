@@ -20,6 +20,7 @@ class Ant:
         self.trail = at.AntTrail(const.LENGTH_TRAIL)
         self.status = 'wandering'
         self.app_cookie = None
+        self.followed_ant = None
         self.step_counter = 0
 
         self.trail.add((self.x, self.y))
@@ -32,6 +33,9 @@ class Ant:
     def is_wandering(self):
         return self.status == 'wandering'
 
+    def is_following(self):
+        return self.status == 'following'
+
     def is_approaching(self):
         return self.status == 'approaching'
 
@@ -43,6 +47,9 @@ class Ant:
 
     def set_wandering(self):
         self.status = 'wandering'
+
+    def set_following(self):
+        self.status = 'following'
 
     def set_approaching(self):
         self.status = 'approaching'
@@ -64,6 +71,16 @@ class Ant:
         self.app_cookie = None
 
 
+    def set_followed_ant(self, ant, spot):
+        self.followed_ant = (ant, spot)
+
+    def get_followed_ant(self):
+        return self.followed_ant
+
+    def clear_followed_ant(self):
+        self.followed_ant = None
+
+
     def inc_step_counter(self):
         self.step_counter += 1
 
@@ -74,11 +91,18 @@ class Ant:
         self.step_counter = val
 
 
+    def get_trail(self):
+        return self.trail.get_trail()
+
     def get_pos(self):
         return (self.x, self.y)
 
     def set_pos(self, x, y):
         self.x, self.y = x, y
+        self.trail.add(self.get_pos())
+
+    def get_angle(self):
+        return self.angle
 
     def set_angle(self, new_angle):
         self.angle = new_angle
@@ -129,10 +153,22 @@ class Ant:
                     pygame.draw.circle(win, ((255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL), x, ANT_SIZE / 2)
             pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
 
+        elif self.is_following():
+            for i, x in enumerate(self.trail.get_trail()):
+                if x != None:
+                    pygame.draw.circle(win, ((255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL), x, ANT_SIZE / 2)
+            pygame.draw.circle(win, const.BLUE, (self.get_pos()), ANT_SIZE)
+
         elif self.is_approaching():
+            for i, x in enumerate(self.trail.get_trail()):
+                if x != None:
+                    pygame.draw.circle(win, ((255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL), x, ANT_SIZE / 2)
             pygame.draw.circle(win, const.YELLOW, (self.get_pos()), ANT_SIZE)
 
         elif self.is_waiting():
+            for i, x in enumerate(self.trail.get_trail()):
+                if x != None:
+                    pygame.draw.circle(win, ((255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL, (255*i)/const.LENGTH_TRAIL), x, ANT_SIZE / 2)
             pygame.draw.circle(win, const.RED, (self.get_pos()), ANT_SIZE)
 
         elif self.is_carring():

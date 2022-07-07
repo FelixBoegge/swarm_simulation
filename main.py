@@ -13,7 +13,7 @@ pygame.init()
 steps_per_sec = 25
 new_ant_creation_freq = 1                          # in seconds
 new_cookie_creation_freq = 5                         # in seconds
-num_start_ants = 10
+num_start_ants = 2
 num_start_cookies = 2
 
 ants = []
@@ -32,7 +32,7 @@ def create_ant():
     ants.append(Ant(len(ants)+1))
 
 
-def get_distance(ant, cookie):
+def get_distance_ant_cookie(ant, cookie):
     dx = abs(ant.get_pos()[0] - cookie.get_pos()[0])
     dy = abs(ant.get_pos()[1] - cookie.get_pos()[1])
     return math.sqrt(pow(dx,2) + pow(dy,2))
@@ -54,23 +54,51 @@ def get_angle(ant, cookie):
 def update():
     for ant in ants:
         if ant.get_step_counter() >= 50:
-            ant.change_random_angle()
+            r = random.randint(1,10)
+            if r > 5:
+                ant.change_random_angle()
             ant.set_step_counter(0)
-        ant.set_new_pos()
+        if not ant.is_following():
+            ant.set_new_pos()
+
 
         if ant.is_wandering():
             ant.inc_step_counter()
             ant.set_velocity(const.ANT_VELOCITY)
             for cookie in cookies:
-                if get_distance(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
+                if get_distance_ant_cookie(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
                     ant.set_approaching()
                     ant.set_approached_cookie(cookie)
                     ant.set_angle(get_angle(ant, cookie))
                     cookie.add_approaching_ant(ant)
 
+            for a in ants:
+                if a != ant and (a.is_wandering() or a.is_following()):
+                    for i, scent in enumerate(a.get_trail()):
+                        if scent != None and ant.get_step_counter() > 20:
+                            dx = abs(ant.get_pos()[0] - scent[0])
+                            dy = abs(ant.get_pos()[1] - scent[1])
+                            d = math.sqrt(pow(dx, 2) + pow(dy, 2))
+                            if d < const.ANT_VELOCITY:
+                                r = random.randint(1, 100)
+                                if r > (const.LENGTH_TRAIL - i):
+                                    ant.set_following()
+                                    ant.set_followed_ant(a, i)
+                        continue
+
+
+        if ant.is_following():
+            ant.set_pos(ant.get_followed_ant()[0].get_trail()[ant.get_followed_ant()[1]][0], ant.get_followed_ant()[0].get_trail()[ant.get_followed_ant()[1]][1])
+            if ant.get_followed_ant()[0].is_approaching():
+                ant.set_approaching()
+                ant.set_approached_cookie(ant.get_followed_ant()[0].get_approached_cookie())
+                ant.set_angle(get_angle(ant, ant.get_followed_ant()[0].get_approached_cookie()))
+                ant.get_followed_ant()[0].get_approached_cookie().add_approaching_ant(ant)
+
+
         if ant.is_approaching():
             ant.set_step_counter(0)
-            if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
+            if get_distance_ant_cookie(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
                 ant.set_waiting()
                 ant.get_approached_cookie().remove_approaching_ant(ant)
                 ant.get_approached_cookie().add_contributing_ant(ant)
@@ -82,11 +110,13 @@ def update():
                 ant.get_approached_cookie().inc_attraction()
                 ant.get_approached_cookie().inc_occupancy()
 
+
         if ant.is_waiting():
             if ant.get_approached_cookie().is_moving():
                 ant.set_carring()
                 ant.set_angle(ant.get_approached_cookie().get_angle_to_nest())
                 ant.set_velocity(const.CARRING_VELOCITY)
+
 
     for cookie in cookies:
         cookie.set_new_pos()
