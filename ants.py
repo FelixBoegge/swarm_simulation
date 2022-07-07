@@ -20,8 +20,10 @@ class Ant:
         self.trail = at.AntTrail(const.LENGTH_TRAIL)
         self.status = 'wandering'
         self.app_cookie = None
+        self.step_counter = 0
 
         self.trail.add((self.x, self.y))
+
 
     def __str__(self):
         return f"ID: {self.id} | status: {self.status} | approached cookie: ({self.app_cookie})"
@@ -62,6 +64,16 @@ class Ant:
         self.app_cookie = None
 
 
+    def inc_step_counter(self):
+        self.step_counter += 1
+
+    def get_step_counter(self):
+        return self.step_counter
+
+    def set_step_counter(self, val):
+        self.step_counter = val
+
+
     def get_pos(self):
         return (self.x, self.y)
 
@@ -70,6 +82,13 @@ class Ant:
 
     def set_angle(self, new_angle):
         self.angle = new_angle
+
+    def change_random_angle(self):
+        self.angle += random.randint(-45, 45)
+        if self.angle < 0:
+            self.angle = 360-self.angle
+        if self.angle > 360:
+            self.angle -= 360
 
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity

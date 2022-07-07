@@ -104,7 +104,7 @@ class Cookie:
 
 
     def inc_attraction(self):
-        self.attraction += 1
+        self.attraction += 5
 
 
     def add_approaching_ant(self, ant):

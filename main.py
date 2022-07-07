@@ -11,7 +11,7 @@ pygame.init()
 
 
 steps_per_sec = 25
-new_ant_creation_freq = 2                          # in seconds
+new_ant_creation_freq = 1                          # in seconds
 new_cookie_creation_freq = 5                         # in seconds
 num_start_ants = 10
 num_start_cookies = 2
@@ -53,9 +53,13 @@ def get_angle(ant, cookie):
 
 def update():
     for ant in ants:
+        if ant.get_step_counter() >= 50:
+            ant.change_random_angle()
+            ant.set_step_counter(0)
         ant.set_new_pos()
 
         if ant.is_wandering():
+            ant.inc_step_counter()
             ant.set_velocity(const.ANT_VELOCITY)
             for cookie in cookies:
                 if get_distance(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
@@ -65,6 +69,7 @@ def update():
                     cookie.add_approaching_ant(ant)
 
         if ant.is_approaching():
+            ant.set_step_counter(0)
             if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
                 ant.set_waiting()
                 ant.get_approached_cookie().remove_approaching_ant(ant)
