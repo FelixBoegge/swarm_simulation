@@ -10,15 +10,8 @@ from cookie import Cookie
 pygame.init()
 
 
-steps_per_sec = 25
-new_ant_creation_freq = 1                          # in seconds
-new_cookie_creation_freq = 5                         # in seconds
-num_start_ants = 2
-num_start_cookies = 2
-
 ants = []
 cookies = []
-
 
 WIN = pygame.display.set_mode((const.WIDTH+const.WIDTH_SIDEBAR, const.HEIGHT))
 pygame.display.set_caption('swarm simulation')
@@ -32,7 +25,7 @@ def create_ant():
     ants.append(Ant(len(ants)+1))
 
 
-def get_distance_ant_cookie(ant, cookie):
+def get_distance(ant, cookie):
     dx = abs(ant.get_pos()[0] - cookie.get_pos()[0])
     dy = abs(ant.get_pos()[1] - cookie.get_pos()[1])
     return math.sqrt(pow(dx,2) + pow(dy,2))
@@ -66,7 +59,7 @@ def update():
             ant.inc_step_counter()
             ant.set_velocity(const.ANT_VELOCITY)
             for cookie in cookies:
-                if get_distance_ant_cookie(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
+                if get_distance(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
                     ant.set_approaching()
                     ant.set_approached_cookie(cookie)
                     ant.set_angle(get_angle(ant, cookie))
@@ -98,7 +91,7 @@ def update():
 
         if ant.is_approaching():
             ant.set_step_counter(0)
-            if get_distance_ant_cookie(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
+            if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
                 ant.set_waiting()
                 ant.get_approached_cookie().remove_approaching_ant(ant)
                 ant.get_approached_cookie().add_contributing_ant(ant)
@@ -173,25 +166,25 @@ def main(win):
     run = True
     ant_creation_helper = cookie_creation_helper = 0
 
-    for _ in range(num_start_ants):
+    for _ in range(const.NUM_START_ANTS):
         create_ant()
-    for _ in range(num_start_cookies):
+    for _ in range(const.NUM_START_COOKIES):
         create_cookie()
 
     while run:
 
         draw(win)
         update()
-        time.sleep(1/steps_per_sec)
+        time.sleep(1/const.STEPS_PER_SECOND)
         ant_creation_helper += 1
         cookie_creation_helper += 1
 
-        if ant_creation_helper >= steps_per_sec * new_ant_creation_freq:
+        if ant_creation_helper >= const.STEPS_PER_SECOND * const.NEW_ANT_CREATION_FREQUENCY:
             if len(ants) < const.MAX_NUM_ANTS:
                 create_ant()
             ant_creation_helper = 0
 
-        if cookie_creation_helper >= steps_per_sec * new_cookie_creation_freq:
+        if cookie_creation_helper >= const.STEPS_PER_SECOND * const.NEW_COOKIE_CREATION_FREQUENCY:
             if len(cookies) < const.MAX_NUM_COOKIES:
                 create_cookie()
             cookie_creation_helper = 0
