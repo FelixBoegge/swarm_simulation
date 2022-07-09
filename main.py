@@ -152,17 +152,15 @@ def update():
 
 def kill_stuck_ants():
     for ant in ants:
+        ref = ant
         death_cycle = []
-        if ant.is_following():
-            next_ant = ant.get_followed_ant()[0]
-            death_cycle.append(next_ant)
-            while next_ant.is_following():
-                next_ant = next_ant.get_followed_ant()[0]
-                death_cycle.append(next_ant)
-                if next_ant == ant:
-                    for ant in death_cycle:
-                        ants.remove(ant)
-                continue
+        while ant and ant.is_following() and ant.get_followed_ant()[0].is_following():
+            ant = ant.get_followed_ant()[0]
+            death_cycle.append(ant)
+            if ant == ref:
+                for ant in death_cycle:
+                    ants.remove(ant)
+            continue
 
        #     slow = fast = ant
         #    while fast and fast.get_followed_ant() and fast.get_followed_ant().get_followed_ant():
@@ -231,7 +229,9 @@ def main(win):
             cookie_creation_helper = 0
 
         if check_stuck_helper >= para.STEPS_PER_SECOND * para.CHECK_STUCK_ANTS:
-            #kill_stuck_ants()
+            print('call kill stuck')
+            kill_stuck_ants()
+            print('test')
             check_stuck_helper = 0
 
         for event in pygame.event.get():
