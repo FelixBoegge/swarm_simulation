@@ -18,11 +18,11 @@ pygame.display.set_caption('swarm simulation')
 
 
 def create_cookie():
-    cookies.append(Cookie(len(cookies)+1))
+    cookies.append(Cookie())
 
 
 def create_ant():
-    ants.append(Ant(len(ants)+1))
+    ants.append(Ant())
 
 
 def get_distance(ant, cookie):
@@ -45,6 +45,9 @@ def get_angle(ant, cookie):
 
 
 def update():
+    collected_cookies = 0
+    cookie_score = 0
+
     for ant in ants:
         if ant.get_step_counter() >= 50:
             r = random.randint(1,10)
@@ -73,8 +76,8 @@ def update():
                             dy = abs(ant.get_pos()[1] - scent[1])
                             d = math.sqrt(pow(dx, 2) + pow(dy, 2))
                             if d < const.ANT_VELOCITY:
-                                r = random.randint(1, 100)
-                                if r > (const.LENGTH_TRAIL - i):
+                                r = random.randint(0, const.LENGTH_TRAIL)
+                                if r >= (const.LENGTH_TRAIL - i):
                                     ant.set_following()
                                     ant.set_followed_ant(a, i)
                         continue
@@ -87,6 +90,8 @@ def update():
                 ant.set_approached_cookie(ant.get_followed_ant()[0].get_approached_cookie())
                 ant.set_angle(get_angle(ant, ant.get_followed_ant()[0].get_approached_cookie()))
                 ant.get_followed_ant()[0].get_approached_cookie().add_approaching_ant(ant)
+
+
 
 
         if ant.is_approaching():
@@ -132,6 +137,8 @@ def update():
             if math.sqrt(pow(abs(cookie.get_pos()[0] - const.COORDS_NEST[0]), 2) +
                          pow(abs(cookie.get_pos()[1] - const.COORDS_NEST[1]), 2)) < const.CARRING_VELOCITY:
                 cookie.set_finished()
+                collected_cookies += 1
+                cookie_score += cookie.get_size()
                 cookie.set_pos(const.COORDS_NEST[0], const.COORDS_NEST[1])
                 cookie.set_velocity(0)
                 for ant in cookie.get_contributing_ant():
@@ -140,6 +147,13 @@ def update():
                     ant.set_velocity(const.ANT_VELOCITY)
                     ant.clear_approached_cookie()
                 cookie.clear_contributing_ant()
+                cookies.remove(cookie)
+
+    return collected_cookies, cookie_score
+
+
+def kill_stuck_ants():
+    pass
 
 
 def draw(win):
@@ -157,6 +171,9 @@ def draw(win):
     pygame.draw.rect(win, const.LIGHTBLUE, (const.COORDS_NEST[0] - 5, const.COORDS_NEST[1] - 5, 10, 10))
 
     for ant in ants:
+        ant.draw_ant_trail(win)
+
+    for ant in ants:
         ant.draw_ant(win)
 
     pygame.display.update()
@@ -164,7 +181,8 @@ def draw(win):
 
 def main(win):
     run = True
-    ant_creation_helper = cookie_creation_helper = 0
+    collected_cookies = cookie_score = 0
+    ant_creation_helper = cookie_creation_helper = check_stuck_helper = 0
 
     for _ in range(const.NUM_START_ANTS):
         create_ant()
@@ -174,7 +192,9 @@ def main(win):
     while run:
 
         draw(win)
-        update()
+        cookie_add, score_add = update()
+        collected_cookies += cookie_add
+        cookie_score += score_add
         time.sleep(1/const.STEPS_PER_SECOND)
         ant_creation_helper += 1
         cookie_creation_helper += 1
@@ -189,6 +209,8 @@ def main(win):
                 create_cookie()
             cookie_creation_helper = 0
 
+        if check_stuck_helper >= const.STEPS_PER_SECOND * const.CHECK_STUCK_ANTS:
+            kill_stuck_ants()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
