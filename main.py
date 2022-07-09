@@ -92,8 +92,6 @@ def update():
                 ant.get_followed_ant()[0].get_approached_cookie().add_approaching_ant(ant)
 
 
-
-
         if ant.is_approaching():
             ant.set_step_counter(0)
             if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
@@ -153,7 +151,29 @@ def update():
 
 
 def kill_stuck_ants():
-    pass
+    for ant in ants:
+        death_cycle = []
+        if ant.is_following():
+            next_ant = ant.get_followed_ant()[0]
+            death_cycle.append(next_ant)
+            while next_ant.is_following():
+                next_ant = next_ant.get_followed_ant()[0]
+                death_cycle.append(next_ant)
+                if next_ant == ant:
+                    for ant in death_cycle:
+                        ants.remove(ant)
+                continue
+
+       #     slow = fast = ant
+        #    while fast and fast.get_followed_ant() and fast.get_followed_ant().get_followed_ant():
+         #       slow, fast = slow.get_followed_ant(), fast.get_followed_ant().get_followed_ant()
+          #      if slow is fast:
+           #         slow = ant
+            #        while slow is not fast:
+             #           slow, fast = slow.get_followed_ant(), fast.get_followed_ant()
+              #      return slow
+
+
 
 
 def draw(win):
@@ -198,6 +218,7 @@ def main(win):
         time.sleep(1 / para.STEPS_PER_SECOND)
         ant_creation_helper += 1
         cookie_creation_helper += 1
+        check_stuck_helper += 1
 
         if ant_creation_helper >= para.STEPS_PER_SECOND * para.NEW_ANT_CREATION_FREQUENCY:
             if len(ants) < para.MAX_NUM_ANTS:
@@ -210,7 +231,8 @@ def main(win):
             cookie_creation_helper = 0
 
         if check_stuck_helper >= para.STEPS_PER_SECOND * para.CHECK_STUCK_ANTS:
-            kill_stuck_ants()
+            #kill_stuck_ants()
+            check_stuck_helper = 0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
