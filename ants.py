@@ -3,7 +3,7 @@ import random
 import pygame
 import math
 import ant_trail as at
-import constants as const
+import parameters as para
 
 
 pygame.init()
@@ -12,11 +12,11 @@ ANT_SIZE = 3
 
 class Ant:
     def __init__(self):
-        self.x = const.COORDS_NEST[0]
-        self.y = const.COORDS_NEST[1]
+        self.x = para.COORDS_NEST[0]
+        self.y = para.COORDS_NEST[1]
         self.angle = random.randint(0, 359)
-        self.velocity = const.ANT_VELOCITY
-        self.trail = at.AntTrail(const.LENGTH_TRAIL)
+        self.velocity = para.ANT_VELOCITY
+        self.trail = at.AntTrail(para.LENGTH_TRAIL)
         self.status = 'wandering'
         self.app_cookie = None
         self.followed_ant = None
@@ -127,8 +127,8 @@ class Ant:
             else:
                 self.angle = 90 - (self.angle - 90)
 
-        if self.x > const.WIDTH:                            # ant leaves the field to the right
-            self.x = const.WIDTH - (self.x - const.WIDTH)
+        if self.x > para.WIDTH:                            # ant leaves the field to the right
+            self.x = para.WIDTH - (self.x - para.WIDTH)
             if self.angle <= 90:
                 self.angle = 90 + (90 - self.angle)
             else:
@@ -138,8 +138,8 @@ class Ant:
             self.y = -self.y
             self.angle = 180 + (180 - self.angle)
 
-        if self.y > const.HEIGHT:                           # ant leaves the field downwards
-            self.y = const.HEIGHT - (self.y - const.HEIGHT)
+        if self.y > para.HEIGHT:                           # ant leaves the field downwards
+            self.y = para.HEIGHT - (self.y - para.HEIGHT)
             self.angle = 180 - (self.angle - 180)
 
         self.trail.add(self.get_pos())
@@ -150,16 +150,16 @@ class Ant:
             for i, x in enumerate(self.trail.get_trail()):
                 if x != None:
                     pygame.draw.circle(win,
-                                       (const.GREEN[0] + ((255-const.GREEN[0])*i)/const.LENGTH_TRAIL,
-                                        const.GREEN[1] + ((255-const.GREEN[1])*i)/const.LENGTH_TRAIL,
-                                        const.GREEN[2] + ((255-const.GREEN[2])*i)/const.LENGTH_TRAIL),
+                                       (para.GREEN[0] + ((255 - para.GREEN[0]) * i) / para.LENGTH_TRAIL,
+                                        para.GREEN[1] + ((255 - para.GREEN[1]) * i) / para.LENGTH_TRAIL,
+                                        para.GREEN[2] + ((255 - para.GREEN[2]) * i) / para.LENGTH_TRAIL),
                                        x,
                                        ANT_SIZE / 2)
 
 
     def draw_ant(self, win):
         if not self.is_following():
-            pygame.draw.circle(win, const.BLACK, (self.get_pos()), ANT_SIZE)
+            pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)
 
         else:
-            pygame.draw.circle(win, const.BLUE, (self.get_pos()), ANT_SIZE)
+            pygame.draw.circle(win, para.BLUE, (self.get_pos()), ANT_SIZE)

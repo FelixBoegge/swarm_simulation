@@ -1,5 +1,5 @@
 import pygame
-import constants as const
+import parameters as para
 import math
 import random
 
@@ -8,9 +8,9 @@ pygame.init()
 
 class Cookie:
     def __init__(self):
-        self.x = random.randint(20, const.WIDTH - 20)
-        self.y = random.randint(20, const.HEIGHT - 20)
-        self.size = random.randint(const.MIN_SIZE_COOKIE, const.MAX_SIZE_COOKIE)
+        self.x = random.randint(20, para.WIDTH - 20)
+        self.y = random.randint(20, para.HEIGHT - 20)
+        self.size = random.randint(para.MIN_SIZE_COOKIE, para.MAX_SIZE_COOKIE)
         self.radius = math.sqrt(self.size / math.pi) * 3
         self.attraction = self.size + 20
         self.occupancy = 0
@@ -19,12 +19,12 @@ class Cookie:
         self.approaching_ants = []
         self.contributing_ants = []
 
-        angle = math.degrees(math.atan(abs(self.y - const.COORDS_NEST[1]) / abs(self.x - const.COORDS_NEST[0])))
-        if (self.x - const.COORDS_NEST[0] > 0 and self.y - const.COORDS_NEST[1] > 0):
+        angle = math.degrees(math.atan(abs(self.y - para.COORDS_NEST[1]) / abs(self.x - para.COORDS_NEST[0])))
+        if (self.x - para.COORDS_NEST[0] > 0 and self.y - para.COORDS_NEST[1] > 0):
             angle = 180 - angle
-        elif (self.x - const.COORDS_NEST[0] > 0 and self.y - const.COORDS_NEST[1] < 0):
+        elif (self.x - para.COORDS_NEST[0] > 0 and self.y - para.COORDS_NEST[1] < 0):
             angle += 180
-        elif (self.x - const.COORDS_NEST[0] < 0 and self.y - const.COORDS_NEST[1] < 0):
+        elif (self.x - para.COORDS_NEST[0] < 0 and self.y - para.COORDS_NEST[1] < 0):
             angle = 360 - angle
         self.angle_to_nest = angle
 
@@ -127,15 +127,15 @@ class Cookie:
 
     def draw_cookie(self, win):
 
-        pygame.draw.circle(win, const.BROWN, (self.get_pos()), self.radius)
+        pygame.draw.circle(win, para.BROWN, (self.get_pos()), self.radius)
 
         if self.is_sitting():
             cookie_label_font = pygame.font.SysFont('Sans Serif', 15)
-            text = cookie_label_font.render(str(self.occupancy) + "/" + str(self.size), True, const.BROWN)
+            text = cookie_label_font.render(str(self.occupancy) + "/" + str(self.size), True, para.BROWN)
             text_length = text.get_width()
             text_height = text.get_height()
             win.blit(text, (self.x - int(text_length / 2), self.y + 1 + (math.sqrt(self.size / math.pi) * 5)))
 
 
     def draw_attraction_area(self, win):
-        pygame.draw.circle(win, const.LIGHTGREEN, (self.get_pos()), self.attraction)
+        pygame.draw.circle(win, para.LIGHTGREEN, (self.get_pos()), self.attraction)
