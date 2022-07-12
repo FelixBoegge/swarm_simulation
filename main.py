@@ -80,16 +80,18 @@ def update():
                                 if r >= (para.LENGTH_TRAIL - i):
                                     ant.set_following()
                                     ant.set_followed_ant(a, i)
+                                    a.add_following_ant(ant)
+                                    check_death_cycle(ant)
                         continue
 
 
         if ant.is_following():
-            ant.set_pos(ant.get_followed_ant()[0].get_trail()[ant.get_followed_ant()[1]][0], ant.get_followed_ant()[0].get_trail()[ant.get_followed_ant()[1]][1])
-            if ant.get_followed_ant()[0].is_approaching():
+            ant.set_pos(ant.get_followed_ant().get_trail()[ant.get_followed_ant_trail()][0], ant.get_followed_ant().get_trail()[ant.get_followed_ant_trail()][1])
+            if ant.get_followed_ant().is_approaching():
                 ant.set_approaching()
-                ant.set_approached_cookie(ant.get_followed_ant()[0].get_approached_cookie())
-                ant.set_angle(get_angle(ant, ant.get_followed_ant()[0].get_approached_cookie()))
-                ant.get_followed_ant()[0].get_approached_cookie().add_approaching_ant(ant)
+                ant.set_approached_cookie(ant.get_followed_ant().get_approached_cookie())
+                ant.set_angle(get_angle(ant, ant.get_followed_ant().get_approached_cookie()))
+                ant.get_followed_ant().get_approached_cookie().add_approaching_ant(ant)
 
 
         if ant.is_approaching():
@@ -149,29 +151,19 @@ def update():
 
     return collected_cookies, cookie_score
 
-
-def kill_stuck_ants():
-    for ant in ants:
-        ref = ant
-        death_cycle = []
-        while ant and ant.is_following() and ant.get_followed_ant()[0].is_following():
-            ant = ant.get_followed_ant()[0]
-            death_cycle.append(ant)
-            if ant == ref:
-                for ant in death_cycle:
-                    ants.remove(ant)
-            continue
-
-       #     slow = fast = ant
-        #    while fast and fast.get_followed_ant() and fast.get_followed_ant().get_followed_ant():
-         #       slow, fast = slow.get_followed_ant(), fast.get_followed_ant().get_followed_ant()
-          #      if slow is fast:
-           #         slow = ant
-            #        while slow is not fast:
-             #           slow, fast = slow.get_followed_ant(), fast.get_followed_ant()
-              #      return slow
-
-
+def check_death_cycle(ant):
+    death_cycle = []
+    next_ant = ant
+    while next_ant.is_following():
+        next_ant = next_ant.get_followed_ant()
+        death_cycle.append(next_ant)
+        if next_ant == ant:
+            for ant in death_cycle:
+                for a in ant.get_following_ants():
+                    a.clear_followed_ant()
+                    a.set_wandering()
+                ants.remove(ant)
+            break
 
 
 def draw(win):
@@ -200,7 +192,7 @@ def draw(win):
 def main(win):
     run = True
     collected_cookies = cookie_score = 0
-    ant_creation_helper = cookie_creation_helper = check_stuck_helper = 0
+    ant_creation_helper = cookie_creation_helper = 0
 
     for _ in range(para.NUM_START_ANTS):
         create_ant()
@@ -216,7 +208,6 @@ def main(win):
         time.sleep(1 / para.STEPS_PER_SECOND)
         ant_creation_helper += 1
         cookie_creation_helper += 1
-        check_stuck_helper += 1
 
         if ant_creation_helper >= para.STEPS_PER_SECOND * para.NEW_ANT_CREATION_FREQUENCY:
             if len(ants) < para.MAX_NUM_ANTS:
@@ -228,11 +219,6 @@ def main(win):
                 create_cookie()
             cookie_creation_helper = 0
 
-        if check_stuck_helper >= para.STEPS_PER_SECOND * para.CHECK_STUCK_ANTS:
-            print('call kill stuck')
-            kill_stuck_ants()
-            print('test')
-            check_stuck_helper = 0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

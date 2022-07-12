@@ -20,6 +20,7 @@ class Ant:
         self.status = 'wandering'
         self.app_cookie = None
         self.followed_ant = None
+        self.following_ants = []
         self.step_counter = 0
 
         self.trail.add((self.x, self.y))
@@ -74,10 +75,22 @@ class Ant:
         self.followed_ant = (ant, spot)
 
     def get_followed_ant(self):
-        return self.followed_ant
+        return self.followed_ant[0]
+
+    def get_followed_ant_trail(self):
+        return self.followed_ant[1]
 
     def clear_followed_ant(self):
         self.followed_ant = None
+
+    def add_following_ant(self, ant):
+        self.following_ants.append(ant)
+
+    def get_following_ants(self):
+        return self.following_ants
+
+    def clear_following_ants(self):
+        self.following_ants = []
 
 
     def inc_step_counter(self):

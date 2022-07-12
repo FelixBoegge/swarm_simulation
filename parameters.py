@@ -4,7 +4,6 @@ HEIGHT = 600
 WIDTH_SIDEBAR = 200
 
 STEPS_PER_SECOND = 25                   # x updates per second
-CHECK_STUCK_ANTS = 5                    # ever x seconds
 COORDS_NEST = (WIDTH / 2, HEIGHT / 2)
 
 # ---------------------ant/ cookie parameters------------------------
