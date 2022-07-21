@@ -1,6 +1,7 @@
-# -----------------dimensions of window in pixels--------------------
 import pygame.image
 
+
+# -----------------dimensions of window in pixels--------------------
 WIDTH = 800
 HEIGHT = 600
 WIDTH_SIDEBAR = 200
@@ -31,14 +32,11 @@ WHITE = (255, 255, 255)         # primer
 LIGHTGREY = (200, 200,200)      # sidebar
 
 BLACK = (0, 0, 0)               # ant
-GREEN = (30, 224, 33)           # ant trail
+PURPLE = (153, 0, 153)          # ant trail
 
-BROWN = (120, 30, 0)            # cookies
-LIGHTGREEN = (200, 255, 200)    # cookie attraction area
+DARKGREY = (30, 30, 30)         # nest
 
-LIGHTBLUE = (60, 60, 250)       # nest
-DARKGREY = (30, 30, 30)
-
+# ------------------------------images-------------------------------
 COOKIE_IMG = pygame.image.load('assets/cookie_img.png')
 BACKGROUND = pygame.transform.scale(pygame.image.load(('assets/leaf_background2.jpg')), (WIDTH, HEIGHT))
 ATTRACTION = pygame.image.load('assets/green_circle.png')
@@ -47,5 +45,5 @@ ATTRACTION = pygame.image.load('assets/green_circle.png')
 CYAN = (0, 255, 255)
 YELLOW = (255, 255, 0)
 RED =  (255, 0, 0)
-PURPLE = (153, 0, 153)
+GREEN = (30, 224, 33)
 BLUE = (0, 0, 255)

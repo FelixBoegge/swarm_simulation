@@ -167,9 +167,9 @@ class Ant:
             for i, x in enumerate(self.trail.get()):
                 if x != None:
                     pygame.draw.circle(win,
-                                       (para.RED[0] + ((255 - para.RED[0]) * i) / para.LENGTH_TRAIL,
-                                        para.RED[1] + ((255 - para.RED[1]) * i) / para.LENGTH_TRAIL,
-                                        para.RED[2] + ((255 - para.RED[2]) * i) / para.LENGTH_TRAIL),
+                                       (para.PURPLE[0] + ((255 - para.PURPLE[0]) * i) / para.LENGTH_TRAIL,
+                                        para.PURPLE[1] + ((255 - para.PURPLE[1]) * i) / para.LENGTH_TRAIL,
+                                        para.PURPLE[2] + ((255 - para.PURPLE[2]) * i) / para.LENGTH_TRAIL),
                                        x,
                                        ANT_SIZE / 2)
 
