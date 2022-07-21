@@ -1,5 +1,6 @@
 import pygame
-import time
+import pygame_widgets
+from pygame_widgets.slider import Slider
 import random
 import math
 
@@ -47,6 +48,7 @@ def get_angle(ant, cookie):
 def update():
     collected_cookies = 0
     cookie_score = 0
+    killed_ants = 0
 
     for ant in ants:
         if ant.get_step_counter() >= 50:
@@ -81,7 +83,7 @@ def update():
                                     ant.set_following()
                                     ant.set_followed_ant(a, i)
                                     a.add_following_ant(ant)
-                                    check_death_cycle(ant)
+                                    killed_ants = check_death_cycle(ant)
                         continue
 
 
@@ -96,13 +98,13 @@ def update():
 
         if ant.is_approaching():
             ant.set_step_counter(0)
-            if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_radius():
+            if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_size():
                 ant.set_waiting()
                 ant.get_approached_cookie().remove_approaching_ant(ant)
                 ant.get_approached_cookie().add_contributing_ant(ant)
                 ant.set_velocity(0)
-                x = ant.get_approached_cookie().get_pos()[0] - math.cos(math.radians(ant.angle)) * ant.get_approached_cookie().get_radius()
-                y = ant.get_approached_cookie().get_pos()[1] + math.sin(math.radians(ant.angle)) * ant.get_approached_cookie().get_radius()
+                x = ant.get_approached_cookie().get_pos()[0] - math.cos(math.radians(ant.angle)) * ant.get_approached_cookie().get_size()
+                y = ant.get_approached_cookie().get_pos()[1] + math.sin(math.radians(ant.angle)) * ant.get_approached_cookie().get_size()
                 ant.set_pos(x, y)
 
                 ant.get_approached_cookie().inc_attraction()
@@ -139,17 +141,17 @@ def update():
                 cookie.set_finished()
                 collected_cookies += 1
                 cookie_score += cookie.get_size()
-                cookie.set_pos(para.COORDS_NEST[0], para.COORDS_NEST[1])
-                cookie.set_velocity(0)
                 for ant in cookie.get_contributing_ant():
                     ant.set_wandering()
                     ant.set_angle(random.randint(0, 359))
                     ant.set_velocity(para.ANT_VELOCITY)
                     ant.clear_approached_cookie()
+                    ant.clear_trail()
                 cookie.clear_contributing_ant()
                 cookies.remove(cookie)
 
-    return collected_cookies, cookie_score
+    return collected_cookies, cookie_score, killed_ants
+
 
 def check_death_cycle(ant):
     death_cycle = []
@@ -163,22 +165,26 @@ def check_death_cycle(ant):
                     a.clear_followed_ant()
                     a.set_wandering()
                 ants.remove(ant)
-            break
+            return len(death_cycle)
+    return 0
 
 
 def draw(win):
-    win.fill(para.WHITE)
+    #win.fill(para.WHITE)
+    win.blit(para.BACKGROUND, (0, 0))
 
     for cookie in cookies:
         if cookie.is_sitting():
             cookie.draw_attraction_area(win)
 
     win.fill(para.LIGHTGREY, (para.WIDTH, 0, para.WIDTH_SIDEBAR, para.HEIGHT))
+    #slider = Slider(win, 820, 20, 160, 30) #pygame_widgets.widget.Slider(title='max num ants', default_value=50, range_values=(1, 100), range_width=150, increment=1)
+    #win.blit(win, slider)
+
+    pygame.draw.rect(win, para.DARKGREY, (para.COORDS_NEST[0] - 5, para.COORDS_NEST[1] - 5, 10, 10))
 
     for cookie in cookies:
         cookie.draw_cookie(win)
-
-    pygame.draw.rect(win, para.LIGHTBLUE, (para.COORDS_NEST[0] - 5, para.COORDS_NEST[1] - 5, 10, 10))
 
     for ant in ants:
         ant.draw_ant_trail(win)
@@ -191,7 +197,7 @@ def draw(win):
 
 def main(win):
     run = True
-    collected_cookies = cookie_score = 0
+    collected_cookies = cookie_score = killed_ants = 0
     ant_creation_helper = cookie_creation_helper = 0
 
     for _ in range(para.NUM_START_ANTS):
@@ -202,10 +208,11 @@ def main(win):
     while run:
 
         draw(win)
-        cookie_add, score_add = update()
+        cookie_add, score_add, killed_ants_add = update()
         collected_cookies += cookie_add
         cookie_score += score_add
-        time.sleep(1 / para.STEPS_PER_SECOND)
+        killed_ants += killed_ants_add
+        pygame.time.delay(1000//para.STEPS_PER_SECOND)
         ant_creation_helper += 1
         cookie_creation_helper += 1
 

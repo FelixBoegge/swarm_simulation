@@ -126,16 +126,19 @@ class Cookie:
 
 
     def draw_cookie(self, win):
-
-        pygame.draw.circle(win, para.BROWN, (self.get_pos()), self.radius)
+        cookie_appear = pygame.transform.scale(para.COOKIE_IMG, (self.get_size()*2, self.get_size()*2))
+        win.blit(cookie_appear, (self.get_pos()[0] - self.get_size(), self.get_pos()[1] - self.get_size()))
 
         if self.is_sitting():
             cookie_label_font = pygame.font.SysFont('Sans Serif', 15)
-            text = cookie_label_font.render(str(self.occupancy) + "/" + str(self.size), True, para.BROWN)
+            text = cookie_label_font.render(str(self.occupancy) + "/" + str(self.size), True, para.BLACK)
             text_length = text.get_width()
             text_height = text.get_height()
-            win.blit(text, (self.x - int(text_length / 2), self.y + 1 + (math.sqrt(self.size / math.pi) * 5)))
+            win.blit(text, (self.x - int(text_length / 2), self.y + self.get_size() + 5))
 
 
     def draw_attraction_area(self, win):
-        pygame.draw.circle(win, para.LIGHTGREEN, (self.get_pos()), self.attraction)
+        attraction_area_appear = pygame.transform.scale(para.ATTRACTION.convert_alpha(), (self.attraction*2 +5, self.attraction*2 +5))
+        attraction_area_appear.set_alpha(50)
+        win.blit(attraction_area_appear, (self.get_pos()[0] - self.get_attraction(), self.get_pos()[1] - self.get_attraction()))
+        #pygame.draw.circle(win, para.LIGHTGREEN, (self.get_pos()), self.attraction)

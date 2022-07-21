@@ -19,5 +19,10 @@ class AntTrail:
             self.head = 0
 
 
-    def get_trail(self):
+    def get(self):
         return self.q[self.head-1::-1] + self.q[:self.head-1:-1]
+
+
+    def clear(self):
+        self.q = [None] * self.capacity
+        self.head = 0

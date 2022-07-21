@@ -104,7 +104,11 @@ class Ant:
 
 
     def get_trail(self):
-        return self.trail.get_trail()
+        return self.trail.get()
+
+    def clear_trail(self):
+        self.trail.clear()
+
 
     def get_pos(self):
         return (self.x, self.y)
@@ -160,19 +164,15 @@ class Ant:
 
     def draw_ant_trail(self, win):
         if not self.is_carring():
-            for i, x in enumerate(self.trail.get_trail()):
+            for i, x in enumerate(self.trail.get()):
                 if x != None:
                     pygame.draw.circle(win,
-                                       (para.GREEN[0] + ((255 - para.GREEN[0]) * i) / para.LENGTH_TRAIL,
-                                        para.GREEN[1] + ((255 - para.GREEN[1]) * i) / para.LENGTH_TRAIL,
-                                        para.GREEN[2] + ((255 - para.GREEN[2]) * i) / para.LENGTH_TRAIL),
+                                       (para.RED[0] + ((255 - para.RED[0]) * i) / para.LENGTH_TRAIL,
+                                        para.RED[1] + ((255 - para.RED[1]) * i) / para.LENGTH_TRAIL,
+                                        para.RED[2] + ((255 - para.RED[2]) * i) / para.LENGTH_TRAIL),
                                        x,
                                        ANT_SIZE / 2)
 
 
     def draw_ant(self, win):
-        if not self.is_following():
-            pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)
-
-        else:
-            pygame.draw.circle(win, para.BLUE, (self.get_pos()), ANT_SIZE)
+        pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)
