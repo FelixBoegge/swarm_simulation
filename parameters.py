@@ -4,7 +4,7 @@ import pygame.image
 # -----------------dimensions of window in pixels--------------------
 WIDTH = 800
 HEIGHT = 600
-WIDTH_SIDEBAR = 250
+WIDTH_SIDEBAR = 300
 
 STEPS_PER_SECOND = 25                   # x updates per second
 COORDS_NEST = (WIDTH / 2, HEIGHT / 2)

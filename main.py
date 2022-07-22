@@ -174,16 +174,15 @@ def check_death_cycle(ant):
 
 def create_sliders():
     sliders = {}
-    sliders['max_ants'] = Slider(50, min=1, max=para.MAX_NUM_ANTS, step_size=1, default=30)
-    sliders['max_cookies'] = Slider(100, min=1, max=para.MAX_NUM_COOKIES, step_size=1, default=5)
-    sliders['ant_creation_freq'] = Slider(150, min=1, max=5, step_size=1, default=2)
-    sliders['cookie_creation_freq'] = Slider(200, min=1, max=10, step_size=1, default=5)
-    sliders['velocity'] = Slider(250, min=1, max=10, step_size=1, default=para.ANT_VELOCITY)
+    sliders['max_ants'] = Slider(50, min=1, max=para.MAX_NUM_ANTS, step_size=1, default=30, label_text='max num ants')
+    sliders['max_cookies'] = Slider(100, min=1, max=para.MAX_NUM_COOKIES, step_size=1, default=5, label_text='max num Cookies')
+    sliders['ant_creation_freq'] = Slider(150, min=1, max=5, step_size=1, default=2, label_text='new ant cycle')
+    sliders['cookie_creation_freq'] = Slider(200, min=1, max=10, step_size=1, default=5, label_text='new cookie cycle')
+    sliders['velocity'] = Slider(250, min=1, max=10, step_size=1, default=para.ANT_VELOCITY, label_text='velocity')
     return sliders
 
 
-def draw(win, sliders):
-    #win.fill(para.WHITE)
+def draw(win, sliders, collected_cookies, cookie_score, killed_ants):
     win.blit(para.BACKGROUND, (0, 0))
 
     for cookie in cookies:
@@ -191,8 +190,6 @@ def draw(win, sliders):
             cookie.draw_attraction_area(win)
 
     win.fill(para.LIGHTGREY, (para.WIDTH, 0, para.WIDTH_SIDEBAR, para.HEIGHT))
-    #slider = Slider(win, 820, 20, 160, 30) #pygame_widgets.widget.Slider(title='max num ants', default_value=50, range_values=(1, 100), range_width=150, increment=1)
-    #win.blit(win, slider)
 
     pygame.draw.rect(win, para.DARKGREY, (para.COORDS_NEST[0] - 5, para.COORDS_NEST[1] - 5, 10, 10))
 
@@ -207,6 +204,40 @@ def draw(win, sliders):
 
     for slider in sliders:
         sliders[slider].draw_slider(win)
+
+    info_font = pygame.font.SysFont('Times New Roman', 15)
+
+    cur_ants_text = info_font.render('current number of ants', True, para.BLACK)
+    cur_cookies_text = info_font.render('current number of cookies', True, para.BLACK)
+    cur_food_text = info_font.render('current food available', True, para.BLACK)
+    collected_cookies_text = info_font.render('collected cookies', True, para.BLACK)
+    collected_food_text = info_font.render('amount of food colleced', True, para.BLACK)
+    killed_ants_text = info_font.render('ants killed in death cycles', True, para.BLACK)
+
+    cur_ants_val_text = info_font.render(str(len(ants)), True, para.BLACK)
+    cur_cookies_val_text = info_font.render(str(len(cookies)), True, para.BLACK)
+    cur_food_val_text = info_font.render(str(sum(cookie.get_size() for cookie in cookies)), True, para.BLACK)
+    collected_cookies_val_text = info_font.render(str(collected_cookies), True, para.BLACK)
+    collected_food_val_text = info_font.render(str(cookie_score), True, para.BLACK)
+    killed_ants_val_text = info_font.render(str(killed_ants), True, para.BLACK)
+
+    win.blit(cur_ants_text, (Slider.X_TEXT, 350))
+    win.blit(cur_ants_val_text, (1030, 350))
+
+    win.blit(cur_cookies_text, (Slider.X_TEXT, 380))
+    win.blit(cur_cookies_val_text, (1030, 380))
+
+    win.blit(cur_food_text, (Slider.X_TEXT, 410))
+    win.blit(cur_food_val_text, (1030, 410))
+
+    win.blit(collected_cookies_text, (Slider.X_TEXT, 440))
+    win.blit(collected_cookies_val_text, (1030, 440))
+
+    win.blit(collected_food_text, (Slider.X_TEXT, 470))
+    win.blit(collected_food_val_text, (1030, 470))
+
+    win.blit(killed_ants_text, (Slider.X_TEXT, 500))
+    win.blit(killed_ants_val_text, (1030, 500))
 
     pygame.display.update()
 
@@ -228,7 +259,7 @@ def main(win):
         for slider in sliders:
             slider_values[slider] = sliders[slider].update_slider()
 
-        draw(win, sliders)
+        draw(win, sliders, collected_cookies, cookie_score, killed_ants)
         cookie_add, score_add, killed_ants_add = update()
         collected_cookies += cookie_add
         cookie_score += score_add
