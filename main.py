@@ -1,18 +1,21 @@
 import pygame
-import pygame_widgets
-from pygame_widgets.slider import Slider
+#import pygame_widgets
+#from pygame_widgets.slider import Slider
 import random
 import math
 
 import parameters as para
 from ants import Ant
 from cookie import Cookie
+from slider import Slider
 
 pygame.init()
 
 
 ants = []
 cookies = []
+sliders = {}
+slider_values = {}
 
 WIN = pygame.display.set_mode((para.WIDTH + para.WIDTH_SIDEBAR, para.HEIGHT))
 pygame.display.set_caption('swarm simulation')
@@ -62,7 +65,7 @@ def update():
 
         if ant.is_wandering():
             ant.inc_step_counter()
-            ant.set_velocity(para.ANT_VELOCITY)
+            ant.set_velocity(slider_values['velocity'])
             for cookie in cookies:
                 if get_distance(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
                     ant.set_approaching()
@@ -77,7 +80,7 @@ def update():
                             dx = abs(ant.get_pos()[0] - scent[0])
                             dy = abs(ant.get_pos()[1] - scent[1])
                             d = math.sqrt(pow(dx, 2) + pow(dy, 2))
-                            if d < para.ANT_VELOCITY:
+                            if d < slider_values['velocity']:
                                 r = random.randint(0, para.LENGTH_TRAIL)
                                 if r >= (para.LENGTH_TRAIL - i):
                                     ant.set_following()
@@ -144,7 +147,7 @@ def update():
                 for ant in cookie.get_contributing_ant():
                     ant.set_wandering()
                     ant.set_angle(random.randint(0, 359))
-                    ant.set_velocity(para.ANT_VELOCITY)
+                    ant.set_velocity(slider_values['velocity'])
                     ant.clear_approached_cookie()
                     ant.clear_trail()
                 cookie.clear_contributing_ant()
@@ -169,7 +172,17 @@ def check_death_cycle(ant):
     return 0
 
 
-def draw(win):
+def create_sliders():
+    sliders = {}
+    sliders['max_ants'] = Slider(50, min=1, max=para.MAX_NUM_ANTS, step_size=1, default=30)
+    sliders['max_cookies'] = Slider(100, min=1, max=para.MAX_NUM_COOKIES, step_size=1, default=5)
+    sliders['ant_creation_freq'] = Slider(150, min=1, max=5, step_size=1, default=2)
+    sliders['cookie_creation_freq'] = Slider(200, min=1, max=10, step_size=1, default=5)
+    sliders['velocity'] = Slider(250, min=1, max=10, step_size=1, default=para.ANT_VELOCITY)
+    return sliders
+
+
+def draw(win, sliders):
     #win.fill(para.WHITE)
     win.blit(para.BACKGROUND, (0, 0))
 
@@ -192,6 +205,9 @@ def draw(win):
     for ant in ants:
         ant.draw_ant(win)
 
+    for slider in sliders:
+        sliders[slider].draw_slider(win)
+
     pygame.display.update()
 
 
@@ -205,9 +221,14 @@ def main(win):
     for _ in range(para.NUM_START_COOKIES):
         create_cookie()
 
+    sliders = create_sliders()
+
     while run:
 
-        draw(win)
+        for slider in sliders:
+            slider_values[slider] = sliders[slider].update_slider()
+
+        draw(win, sliders)
         cookie_add, score_add, killed_ants_add = update()
         collected_cookies += cookie_add
         cookie_score += score_add
@@ -216,13 +237,13 @@ def main(win):
         ant_creation_helper += 1
         cookie_creation_helper += 1
 
-        if ant_creation_helper >= para.STEPS_PER_SECOND * para.NEW_ANT_CREATION_FREQUENCY:
-            if len(ants) < para.MAX_NUM_ANTS:
+        if ant_creation_helper >= para.STEPS_PER_SECOND * slider_values['ant_creation_freq']:
+            if len(ants) < slider_values['max_ants']:
                 create_ant()
             ant_creation_helper = 0
 
-        if cookie_creation_helper >= para.STEPS_PER_SECOND * para.NEW_COOKIE_CREATION_FREQUENCY:
-            if len(cookies) < para.MAX_NUM_COOKIES:
+        if cookie_creation_helper >= para.STEPS_PER_SECOND * slider_values['cookie_creation_freq']:
+            if len(cookies) < slider_values['max_cookies']:
                 create_cookie()
             cookie_creation_helper = 0
 

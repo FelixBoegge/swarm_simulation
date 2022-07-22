@@ -4,7 +4,7 @@ import pygame.image
 # -----------------dimensions of window in pixels--------------------
 WIDTH = 800
 HEIGHT = 600
-WIDTH_SIDEBAR = 200
+WIDTH_SIDEBAR = 250
 
 STEPS_PER_SECOND = 25                   # x updates per second
 COORDS_NEST = (WIDTH / 2, HEIGHT / 2)
@@ -22,7 +22,7 @@ NEW_COOKIE_CREATION_FREQUENCY = 3   # every x seconds
 MIN_SIZE_COOKIE = 5
 MAX_SIZE_COOKIE = 25
 
-ANT_VELOCITY = 4                    # in pixels
+ANT_VELOCITY = 4                    # in pixels (default value)
 CARRING_VELOCITY = 1                # in pixels
 
 LENGTH_TRAIL = 30
@@ -30,6 +30,9 @@ LENGTH_TRAIL = 30
 # ------------------------------colors-------------------------------
 WHITE = (255, 255, 255)         # primer
 LIGHTGREY = (200, 200,200)      # sidebar
+
+GREY = (150, 150, 150)          # slider bar
+GREEN = (30, 224, 33)           # slider pointer
 
 BLACK = (0, 0, 0)               # ant
 PURPLE = (153, 0, 153)          # ant trail
