@@ -182,7 +182,7 @@ def create_sliders():
     return sliders
 
 
-def draw(win, sliders, collected_cookies, cookie_score, killed_ants):
+def draw(win, sliders, collected_cookies, cookie_score, killed_ants, time_counter):
     win.blit(para.BACKGROUND, (0, 0))
 
     for cookie in cookies:
@@ -213,13 +213,15 @@ def draw(win, sliders, collected_cookies, cookie_score, killed_ants):
     collected_cookies_text = info_font.render('collected cookies', True, para.BLACK)
     collected_food_text = info_font.render('amount of food colleced', True, para.BLACK)
     killed_ants_text = info_font.render('ants killed in death cycles', True, para.BLACK)
+    time_text = info_font.render('time passed [seconds]', True, para.BLACK)
 
     cur_ants_val_text = info_font.render(str(len(ants)), True, para.BLACK)
     cur_cookies_val_text = info_font.render(str(len(cookies)), True, para.BLACK)
     cur_food_val_text = info_font.render(str(sum(cookie.get_size() for cookie in cookies)), True, para.BLACK)
-    collected_cookies_val_text = info_font.render(str(collected_cookies), True, para.BLACK)
-    collected_food_val_text = info_font.render(str(cookie_score), True, para.BLACK)
-    killed_ants_val_text = info_font.render(str(killed_ants), True, para.BLACK)
+    collected_cookies_val_text = info_font.render(str(collected_cookies), True, para.GREEN)
+    collected_food_val_text = info_font.render(str(cookie_score), True, para.GREEN)
+    killed_ants_val_text = info_font.render(str(killed_ants), True, para.RED)
+    time_val_text = info_font.render(str(time_counter), True, para.BLACK)
 
     win.blit(cur_ants_text, (Slider.X_TEXT, 350))
     win.blit(cur_ants_val_text, (1030, 350))
@@ -239,13 +241,16 @@ def draw(win, sliders, collected_cookies, cookie_score, killed_ants):
     win.blit(killed_ants_text, (Slider.X_TEXT, 500))
     win.blit(killed_ants_val_text, (1030, 500))
 
+    win.blit(time_text, (Slider.X_TEXT, 530))
+    win.blit(time_val_text, (1030, 530))
+
     pygame.display.update()
 
 
 def main(win):
     run = True
-    collected_cookies = cookie_score = killed_ants = 0
-    ant_creation_helper = cookie_creation_helper = 0
+    collected_cookies = cookie_score = killed_ants = time_counter = 0
+    ant_creation_helper = cookie_creation_helper = time_counter_helper = 0
 
     for _ in range(para.NUM_START_ANTS):
         create_ant()
@@ -259,7 +264,7 @@ def main(win):
         for slider in sliders:
             slider_values[slider] = sliders[slider].update_slider()
 
-        draw(win, sliders, collected_cookies, cookie_score, killed_ants)
+        draw(win, sliders, collected_cookies, cookie_score, killed_ants, time_counter)
         cookie_add, score_add, killed_ants_add = update()
         collected_cookies += cookie_add
         cookie_score += score_add
@@ -267,6 +272,7 @@ def main(win):
         pygame.time.delay(1000//para.STEPS_PER_SECOND)
         ant_creation_helper += 1
         cookie_creation_helper += 1
+        time_counter_helper += 1
 
         if ant_creation_helper >= para.STEPS_PER_SECOND * slider_values['ant_creation_freq']:
             if len(ants) < slider_values['max_ants']:
@@ -277,6 +283,10 @@ def main(win):
             if len(cookies) < slider_values['max_cookies']:
                 create_cookie()
             cookie_creation_helper = 0
+
+        if time_counter_helper >= para.STEPS_PER_SECOND:
+            time_counter += 1
+            time_counter_helper = 0
 
 
         for event in pygame.event.get():
