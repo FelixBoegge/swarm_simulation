@@ -1,4 +1,5 @@
 import pygame.image
+pygame.init()
 
 
 # -----------------dimensions of window in pixels--------------------
@@ -41,8 +42,10 @@ DARKGREY = (30, 30, 30)         # nest
 
 # ------------------------------images-------------------------------
 COOKIE_IMG = pygame.image.load('assets/cookie_img.png')
-BACKGROUND = pygame.transform.scale(pygame.image.load(('assets/leaf_background2.jpg')), (WIDTH, HEIGHT))
-ATTRACTION = pygame.image.load('assets/green_circle.png')
+ANT_IMG = pygame.image.load('assets/ant.png')
+BACKGROUND = pygame.transform.scale(pygame.image.load('assets/leaf_background2.jpg'), (WIDTH, HEIGHT))
+BACKGROUND.set_alpha(200)
+ATTRACTION = pygame.image.load('assets/yellow_circle.png')
 
 
 CYAN = (0, 255, 255)

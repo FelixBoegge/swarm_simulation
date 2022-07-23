@@ -113,6 +113,9 @@ class Ant:
     def get_pos(self):
         return (self.x, self.y)
 
+    def get_last_pos(self):
+        return self.trail.get_last_pos()
+
     def set_pos(self, x, y):
         self.x, self.y = x, y
         self.trail.add(self.get_pos())
@@ -175,4 +178,7 @@ class Ant:
 
 
     def draw_ant(self, win):
-        pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)
+        ant_appear = pygame.transform.rotate(pygame.transform.scale(para.ANT_IMG, (10, 10)), self.get_angle()-90)
+
+        win.blit(ant_appear, (self.get_pos()[0] - ant_appear.get_width()/2, self.get_pos()[1] - ant_appear.get_height()/2))
+        #pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)

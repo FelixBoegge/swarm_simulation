@@ -25,7 +25,7 @@ class Slider:
     def update_slider(self):
         pos = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        if Slider.X_SLIDER <= pos[0] <= (Slider.X_SLIDER + Slider.WIDTH_SLIDER) and (self.y - Slider.POINTER_RADIUS) <= pos[1] <= (self.y + Slider.POINTER_RADIUS):
+        if Slider.X_SLIDER <= pos[0] <= (Slider.X_SLIDER + Slider.WIDTH_SLIDER) and (self.y - Slider.POINTER_RADIUS*2) <= pos[1] <= (self.y + Slider.POINTER_RADIUS*2):
             if click[0]:
                 self.current = int(((pos[0] - Slider.X_SLIDER) * ((self.max - self.min) / Slider.WIDTH_SLIDER))) + self.min
         return self.current

@@ -22,6 +22,9 @@ class AntTrail:
     def get(self):
         return self.q[self.head-1::-1] + self.q[:self.head-1:-1]
 
+    def get_last_pos(self):
+        return self.q[self.head-2]
+
 
     def clear(self):
         self.q = [None] * self.capacity

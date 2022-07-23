@@ -138,7 +138,6 @@ class Cookie:
 
 
     def draw_attraction_area(self, win):
-        attraction_area_appear = pygame.transform.scale(para.ATTRACTION.convert_alpha(), (self.attraction*2 +5, self.attraction*2 +5))
+        attraction_area_appear = pygame.transform.scale(para.ATTRACTION, (self.attraction*2, self.attraction*2))
         attraction_area_appear.set_alpha(50)
-        win.blit(attraction_area_appear, (self.get_pos()[0] - self.get_attraction(), self.get_pos()[1] - self.get_attraction()))
-        #pygame.draw.circle(win, para.LIGHTGREEN, (self.get_pos()), self.attraction)
+        win.blit(attraction_area_appear, (self.get_pos()[0] - attraction_area_appear.get_width()/2, self.get_pos()[1] - attraction_area_appear.get_height()/2))
