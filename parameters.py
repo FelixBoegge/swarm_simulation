@@ -42,7 +42,7 @@ DARKGREY = (30, 30, 30)         # nest
 
 # ------------------------------images-------------------------------
 COOKIE_IMG = pygame.image.load('assets/cookie_img.png')
-ANT_IMG = pygame.image.load('assets/ant.png')
+ANT_IMG = pygame.image.load('assets/arrow.png')
 BACKGROUND = pygame.transform.scale(pygame.image.load('assets/leaf_background2.jpg'), (WIDTH, HEIGHT))
 BACKGROUND.set_alpha(200)
 ATTRACTION = pygame.image.load('assets/yellow_circle.png')
