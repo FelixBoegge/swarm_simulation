@@ -162,12 +162,12 @@ class Ant:
             self.y = para.HEIGHT - (self.y - para.HEIGHT)
             self.angle = 180 - (self.angle - 180)
 
-        self.trail.add((self.get_pos(), self.get_angle()))
+        self.trail.add(self.get_pos())
 
 
     def draw_ant_trail(self, win):
         if not self.is_carring():
-            for i, x in enumerate(self.trail.get()[0]):
+            for i, x in enumerate(self.trail.get()):
                 if x != None:
                     pygame.draw.circle(win,
                                        (para.PURPLE[0] + ((255 - para.PURPLE[0]) * i) / para.LENGTH_TRAIL,
