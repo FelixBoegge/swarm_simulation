@@ -33,25 +33,25 @@ def get_distance(ant, cookie):
     return math.sqrt(pow(dx,2) + pow(dy,2))
 
 
-def get_angle(ant, cookie):
-    dx = ant.get_pos()[0] - cookie.get_pos()[0]
-    dy = ant.get_pos()[1] - cookie.get_pos()[1]
-    angle = math.degrees(math.atan(abs(dy) / abs(dx)))
-    if (dx > 0 and dy > 0):
-        angle = 180 - angle
-    elif (dx > 0 and dy < 0):
-        angle += 180
-    elif (dx < 0 and dy < 0):
-        angle = 360 - angle
-    return angle
+#def get_angle(ant, cookie):
+ #   dx = ant.get_pos()[0] - cookie.get_pos()[0]
+  #  dy = ant.get_pos()[1] - cookie.get_pos()[1]
+   # angle = math.degrees(math.atan(abs(dy) / abs(dx)))
+    #if (dx > 0 and dy > 0):
+#        angle = 180 - angle
+ #   elif (dx > 0 and dy < 0):
+  #      angle += 180
+   # elif (dx < 0 and dy < 0):
+    #    angle = 360 - angle
+    #return angle
 
 
 def calc_angle(x1, y1, x2, y2):
-    dx = abs(x1 - x2)
-    dy = abs(y1 - y2)
+    dx = x1 - x2
+    dy = y1 - y2
     if dx == 0:
         dx = 0.01
-    angle = math.degrees(math.atan(dy/dx))
+    angle = math.degrees(math.atan(abs(dy) / abs(dx)))
     if (dx > 0 and dy > 0):
         angle = 180 - angle
     elif (dx > 0 and dy < 0):
@@ -83,7 +83,8 @@ def update():
                 if get_distance(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
                     ant.set_approaching()
                     ant.set_approached_cookie(cookie)
-                    ant.set_angle(get_angle(ant, cookie))
+                    ant.set_angle(calc_angle(ant.get_pos()[0], ant.get_pos()[1], cookie.get_pos()[0], cookie.get_pos()[1]))
+                    #ant.set_angle(get_angle(ant, cookie))
                     cookie.add_approaching_ant(ant)
 
             for a in ants:
@@ -111,7 +112,9 @@ def update():
             if ant.get_followed_ant().is_approaching():
                 ant.set_approaching()
                 ant.set_approached_cookie(ant.get_followed_ant().get_approached_cookie())
-                ant.set_angle(get_angle(ant, ant.get_followed_ant().get_approached_cookie()))
+                c = ant.get_followed_ant().get_approached_cookie()
+                ant.set_angle(calc_angle(ant.get_pos()[0], ant.get_pos()[1], c.get_pos()[0], c.get_pos()[1]))
+                #ant.set_angle(get_angle(ant, ant.get_followed_ant().get_approached_cookie()))
                 ant.get_followed_ant().get_approached_cookie().add_approaching_ant(ant)
 
 
