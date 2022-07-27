@@ -1,11 +1,12 @@
 import pygame
-import random
 import math
+import random
 
 import parameters as para
 from ants import Ant
 from cookie import Cookie
 from slider import Slider
+
 
 pygame.init()
 
@@ -115,7 +116,6 @@ def update():
                 x = ant.get_approached_cookie().get_pos()[0] - math.cos(math.radians(ant.angle)) * ant.get_approached_cookie().get_size()
                 y = ant.get_approached_cookie().get_pos()[1] + math.sin(math.radians(ant.angle)) * ant.get_approached_cookie().get_size()
                 ant.set_pos(x, y)
-
                 ant.get_approached_cookie().inc_attraction()
                 ant.get_approached_cookie().inc_occupancy()
 
@@ -143,6 +143,7 @@ def update():
                     ant.set_carring()
                     ant.set_velocity(para.CARRING_VELOCITY)
                     ant.set_angle(cookie.get_angle_to_nest())
+
 
         if cookie.is_moving():
             if calc_distance(cookie.get_pos()[0], cookie.get_pos()[1], para.COORDS_NEST[0], para.COORDS_NEST[1]) < para.CARRING_VELOCITY:
@@ -211,23 +212,21 @@ def draw(win, sliders, collected_cookies, cookie_score, killed_ants, time_counte
     for slider in sliders:
         sliders[slider].draw_slider(win)
 
-    info_font = pygame.font.SysFont('Times New Roman', 15)
+    cur_ants_text = para.info_text_font.render('current number of ants', True, para.BLACK)
+    cur_cookies_text = para.info_text_font.render('current number of cookies', True, para.BLACK)
+    cur_food_text = para.info_text_font.render('current food available', True, para.BLACK)
+    collected_cookies_text = para.info_text_font.render('collected cookies', True, para.BLACK)
+    collected_food_text = para.info_text_font.render('amount of food collected', True, para.BLACK)
+    killed_ants_text = para.info_text_font.render('ants killed in death cycles', True, para.BLACK)
+    time_text = para.info_text_font.render('time passed [seconds]', True, para.BLACK)
 
-    cur_ants_text = info_font.render('current number of ants', True, para.BLACK)
-    cur_cookies_text = info_font.render('current number of cookies', True, para.BLACK)
-    cur_food_text = info_font.render('current food available', True, para.BLACK)
-    collected_cookies_text = info_font.render('collected cookies', True, para.BLACK)
-    collected_food_text = info_font.render('amount of food collected', True, para.BLACK)
-    killed_ants_text = info_font.render('ants killed in death cycles', True, para.BLACK)
-    time_text = info_font.render('time passed [seconds]', True, para.BLACK)
-
-    cur_ants_val_text = info_font.render(str(len(ants)), True, para.BLACK)
-    cur_cookies_val_text = info_font.render(str(len(cookies)), True, para.BLACK)
-    cur_food_val_text = info_font.render(str(sum(cookie.get_size() for cookie in cookies)), True, para.BLACK)
-    collected_cookies_val_text = info_font.render(str(collected_cookies), True, para.GREEN2)
-    collected_food_val_text = info_font.render(str(cookie_score), True, para.GREEN2)
-    killed_ants_val_text = info_font.render(str(killed_ants), True, para.RED)
-    time_val_text = info_font.render(str(time_counter), True, para.BLACK)
+    cur_ants_val_text = para.info_val_font.render(str(len(ants)).rjust(3), True, para.BLACK)
+    cur_cookies_val_text = para.info_val_font.render(str(len(cookies)).rjust(3), True, para.BLACK)
+    cur_food_val_text = para.info_val_font.render(str(sum(cookie.get_size() for cookie in cookies)).rjust(3), True, para.BLACK)
+    collected_cookies_val_text = para.info_val_font.render(str(collected_cookies).rjust(3), True, para.GREEN2)
+    collected_food_val_text = para.info_val_font.render(str(cookie_score).rjust(3), True, para.GREEN2)
+    killed_ants_val_text = para.info_val_font.render(str(killed_ants).rjust(3), True, para.RED)
+    time_val_text = para.info_val_font.render(str(time_counter).rjust(3), True, para.BLACK)
 
     win.blit(cur_ants_text, (Slider.X_TEXT, 350))
     win.blit(cur_ants_val_text, (1030, 350))

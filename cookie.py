@@ -1,7 +1,9 @@
 import pygame
-import parameters as para
 import math
 import random
+
+import parameters as para
+
 
 pygame.init()
 
@@ -136,10 +138,8 @@ class Cookie:
         win.blit(cookie_appear, (self.get_pos()[0] - self.get_size(), self.get_pos()[1] - self.get_size()))
 
         if self.is_sitting():
-            cookie_label_font = pygame.font.SysFont('Sans Serif', 15)
-            text = cookie_label_font.render(str(self.occupancy) + "/" + str(self.size), True, para.BLACK)
+            text = para.cookie_val_font.render(str(self.occupancy) + "/" + str(self.size), True, para.BLACK)
             text_length = text.get_width()
-            text_height = text.get_height()
             win.blit(text, (self.x - int(text_length / 2), self.y + self.get_size() + 5))
 
 

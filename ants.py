@@ -1,16 +1,17 @@
-import random
-
 import pygame
 import math
-import ant_trail as at
+import random
+
 import parameters as para
+import ant_trail as at
 
 
 pygame.init()
 
-ANT_SIZE = 3
 
 class Ant:
+    ANT_SIZE = 3
+
     def __init__(self):
         self.x = para.COORDS_NEST[0]
         self.y = para.COORDS_NEST[1]
@@ -174,11 +175,9 @@ class Ant:
                                         para.PURPLE[1] + ((255 - para.PURPLE[1]) * i) / para.LENGTH_TRAIL,
                                         para.PURPLE[2] + ((255 - para.PURPLE[2]) * i) / para.LENGTH_TRAIL),
                                        x,
-                                       ANT_SIZE / 2)
+                                       Ant.ANT_SIZE / 2)
 
 
     def draw_ant(self, win):
         ant_appear = pygame.transform.rotate(pygame.transform.scale(para.ANT_IMG, (10, 10)), self.get_angle()-90)
-
         win.blit(ant_appear, (self.get_pos()[0] - ant_appear.get_width()/2, self.get_pos()[1] - ant_appear.get_height()/2))
-        #pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)

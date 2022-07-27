@@ -1,5 +1,7 @@
 import pygame
+
 import parameters as para
+
 
 class Slider:
     X_TEXT = 810
@@ -33,19 +35,14 @@ class Slider:
 
     def draw_slider(self, win):
         pygame.draw.rect(win, para.GREY, self.slider_bar_space, border_radius=1)
-        pygame.draw.circle(win, para.GREEN, (Slider.X_SLIDER + ((self.current / (self.max - self.min)) * Slider.WIDTH_SLIDER), self.y + (Slider.HEIGHT_SLIDER / 2)), Slider.POINTER_RADIUS)
+        pygame.draw.circle(win, para.GREEN, (Slider.X_SLIDER + (((self.current - self.min) / (self.max - self.min)) * Slider.WIDTH_SLIDER), self.y + (Slider.HEIGHT_SLIDER / 2)), Slider.POINTER_RADIUS)
 
-        slider_label_font = pygame.font.SysFont('Areal', 20)
-        text_min = slider_label_font.render(str(self.min), True, para.GREY)
-        text_max = slider_label_font.render(str(self.max), True, para.GREY)
-        text_cur = slider_label_font.render(str(self.current), True, para.BLACK)
+        text = para.slider_label_font.render(self.label_text, True, para.BLACK)
+        win.blit(text, (Slider.X_TEXT, self.y - int(text.get_height() / 2)))
 
+        text_min = para.slider_val_font.render(str(self.min), True, para.GREY)
+        text_max = para.slider_val_font.render(str(self.max), True, para.GREY)
+        text_cur = para.slider_val_font.render(str(self.current), True, para.BLACK)
         win.blit(text_min, (Slider.X_SLIDER - int(text_min.get_width() / 2), self.y + 4))
         win.blit(text_max, (Slider.X_SLIDER + Slider.WIDTH_SLIDER - int(text_max.get_width() / 2), self.y + 4))
-        win.blit(text_cur, ((Slider.X_SLIDER + ((self.current / (self.max - self.min)) * Slider.WIDTH_SLIDER)) - int(text_cur.get_width() / 2), self.y - text_cur.get_height() - 8))
-
-        slider_text_font = pygame.font.SysFont('Times New Roman', 15)
-        text = slider_text_font.render(self.label_text, True, para.BLACK)
-
-        win.blit(text, (Slider.X_TEXT, self.y - int(text.get_height()/2)))
-
+        win.blit(text_cur, ((Slider.X_SLIDER + (((self.current - self.min) / (self.max - self.min)) * Slider.WIDTH_SLIDER)) - int(text_cur.get_width() / 2), self.y - text_cur.get_height() - 8))
