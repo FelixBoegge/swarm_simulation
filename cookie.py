@@ -19,14 +19,20 @@ class Cookie:
         self.approaching_ants = []
         self.contributing_ants = []
 
-        angle = math.degrees(math.atan(abs(self.y - para.COORDS_NEST[1]) / abs(self.x - para.COORDS_NEST[0])))
-        if (self.x - para.COORDS_NEST[0] > 0 and self.y - para.COORDS_NEST[1] > 0):
-            angle = 180 - angle
-        elif (self.x - para.COORDS_NEST[0] > 0 and self.y - para.COORDS_NEST[1] < 0):
-            angle += 180
-        elif (self.x - para.COORDS_NEST[0] < 0 and self.y - para.COORDS_NEST[1] < 0):
-            angle = 360 - angle
-        self.angle_to_nest = angle
+        if self.x == para.COORDS_NEST[0]:
+            if self.y > para.COORDS_NEST[1]:
+                self.angle_to_nest = 90
+            else:
+                self.angle_to_nest = 270
+        else:
+            angle = math.degrees(math.atan(abs(self.y - para.COORDS_NEST[1]) / abs(self.x - para.COORDS_NEST[0])))
+            if (self.x - para.COORDS_NEST[0] > 0 and self.y - para.COORDS_NEST[1] > 0):
+                angle = 180 - angle
+            elif (self.x - para.COORDS_NEST[0] > 0 and self.y - para.COORDS_NEST[1] < 0):
+                angle += 180
+            elif (self.x - para.COORDS_NEST[0] < 0 and self.y - para.COORDS_NEST[1] < 0):
+                angle = 360 - angle
+            self.angle_to_nest = angle
 
 
     def __str__(self):

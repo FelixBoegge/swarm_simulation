@@ -178,7 +178,7 @@ class Ant:
 
 
     def draw_ant(self, win):
-        ant_appear = pygame.transform.rotate(pygame.transform.scale(para.ANT_IMG, (20, 20)), self.get_angle()-90)
+        ant_appear = pygame.transform.rotate(pygame.transform.scale(para.ANT_IMG, (10, 10)), self.get_angle()-90)
 
         win.blit(ant_appear, (self.get_pos()[0] - ant_appear.get_width()/2, self.get_pos()[1] - ant_appear.get_height()/2))
         #pygame.draw.circle(win, para.BLACK, (self.get_pos()), ANT_SIZE)

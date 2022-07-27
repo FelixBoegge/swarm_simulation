@@ -27,37 +27,28 @@ def create_ant():
     ants.append(Ant())
 
 
-def get_distance(ant, cookie):
-    dx = abs(ant.get_pos()[0] - cookie.get_pos()[0])
-    dy = abs(ant.get_pos()[1] - cookie.get_pos()[1])
-    return math.sqrt(pow(dx,2) + pow(dy,2))
-
-
-#def get_angle(ant, cookie):
- #   dx = ant.get_pos()[0] - cookie.get_pos()[0]
-  #  dy = ant.get_pos()[1] - cookie.get_pos()[1]
-   # angle = math.degrees(math.atan(abs(dy) / abs(dx)))
-    #if (dx > 0 and dy > 0):
-#        angle = 180 - angle
- #   elif (dx > 0 and dy < 0):
-  #      angle += 180
-   # elif (dx < 0 and dy < 0):
-    #    angle = 360 - angle
-    #return angle
+def calc_distance(x1, y1, x2, y2):
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    return math.sqrt(pow(dx, 2) + pow(dy, 2))
 
 
 def calc_angle(x1, y1, x2, y2):
     dx = x1 - x2
     dy = y1 - y2
     if dx == 0:
-        dx = 0.01
-    angle = math.degrees(math.atan(abs(dy) / abs(dx)))
-    if (dx > 0 and dy > 0):
-        angle = 180 - angle
-    elif (dx > 0 and dy < 0):
-        angle += 180
-    elif (dx < 0 and dy < 0):
-        angle = 360 - angle
+        if dy > 0:
+            angle = 90
+        else:
+            angle = 270
+    else:
+        angle = math.degrees(math.atan(abs(dy) / abs(dx)))
+        if (dx > 0 and dy > 0):
+            angle = 180 - angle
+        elif (dx > 0 and dy < 0):
+            angle += 180
+        elif (dx < 0 and dy < 0):
+            angle = 360 - angle
     return angle
 
 
@@ -80,23 +71,20 @@ def update():
             ant.inc_step_counter()
             ant.set_velocity(slider_values['velocity'])
             for cookie in cookies:
-                if get_distance(ant, cookie) < cookie.get_attraction() and cookie.is_sitting():
+                if calc_distance(ant.get_pos()[0], ant.get_pos()[1], cookie.get_pos()[0], cookie.get_pos()[1]) < cookie.get_attraction() and cookie.is_sitting():
                     ant.set_approaching()
                     ant.set_approached_cookie(cookie)
                     ant.set_angle(calc_angle(ant.get_pos()[0], ant.get_pos()[1], cookie.get_pos()[0], cookie.get_pos()[1]))
-                    #ant.set_angle(get_angle(ant, cookie))
                     cookie.add_approaching_ant(ant)
 
             for a in ants:
                 if a != ant and (a.is_wandering() or a.is_following()):
                     for i, scent in enumerate(a.get_trail()):
                         if scent != None and ant.get_step_counter() > 20:
-                            dx = abs(ant.get_pos()[0] - scent[0])
-                            dy = abs(ant.get_pos()[1] - scent[1])
-                            d = math.sqrt(pow(dx, 2) + pow(dy, 2))
+                            d = calc_distance(ant.get_pos()[0], ant.get_pos()[1], scent[0], scent[1])
                             if d < slider_values['velocity']:
                                 r = random.randint(0, para.LENGTH_TRAIL)
-                                if r >= (para.LENGTH_TRAIL - i):
+                                if r >= i:
                                     ant.set_following()
                                     ant.set_followed_ant(a, i)
                                     a.add_following_ant(ant)
@@ -114,13 +102,12 @@ def update():
                 ant.set_approached_cookie(ant.get_followed_ant().get_approached_cookie())
                 c = ant.get_followed_ant().get_approached_cookie()
                 ant.set_angle(calc_angle(ant.get_pos()[0], ant.get_pos()[1], c.get_pos()[0], c.get_pos()[1]))
-                #ant.set_angle(get_angle(ant, ant.get_followed_ant().get_approached_cookie()))
                 ant.get_followed_ant().get_approached_cookie().add_approaching_ant(ant)
 
 
         if ant.is_approaching():
             ant.set_step_counter(0)
-            if get_distance(ant, ant.get_approached_cookie()) < ant.get_approached_cookie().get_size():
+            if calc_distance(ant.get_pos()[0], ant.get_pos()[1], ant.get_approached_cookie().get_pos()[0], ant.get_approached_cookie().get_pos()[1]) < ant.get_approached_cookie().get_size():
                 ant.set_waiting()
                 ant.get_approached_cookie().remove_approaching_ant(ant)
                 ant.get_approached_cookie().add_contributing_ant(ant)
@@ -158,8 +145,7 @@ def update():
                     ant.set_angle(cookie.get_angle_to_nest())
 
         if cookie.is_moving():
-            if math.sqrt(pow(abs(cookie.get_pos()[0] - para.COORDS_NEST[0]), 2) +
-                         pow(abs(cookie.get_pos()[1] - para.COORDS_NEST[1]), 2)) < para.CARRING_VELOCITY:
+            if calc_distance(cookie.get_pos()[0], cookie.get_pos()[1], para.COORDS_NEST[0], para.COORDS_NEST[1]) < para.CARRING_VELOCITY:
                 cookie.set_finished()
                 collected_cookies += 1
                 cookie_score += cookie.get_size()
@@ -231,15 +217,15 @@ def draw(win, sliders, collected_cookies, cookie_score, killed_ants, time_counte
     cur_cookies_text = info_font.render('current number of cookies', True, para.BLACK)
     cur_food_text = info_font.render('current food available', True, para.BLACK)
     collected_cookies_text = info_font.render('collected cookies', True, para.BLACK)
-    collected_food_text = info_font.render('amount of food colleced', True, para.BLACK)
+    collected_food_text = info_font.render('amount of food collected', True, para.BLACK)
     killed_ants_text = info_font.render('ants killed in death cycles', True, para.BLACK)
     time_text = info_font.render('time passed [seconds]', True, para.BLACK)
 
     cur_ants_val_text = info_font.render(str(len(ants)), True, para.BLACK)
     cur_cookies_val_text = info_font.render(str(len(cookies)), True, para.BLACK)
     cur_food_val_text = info_font.render(str(sum(cookie.get_size() for cookie in cookies)), True, para.BLACK)
-    collected_cookies_val_text = info_font.render(str(collected_cookies), True, para.GREEN)
-    collected_food_val_text = info_font.render(str(cookie_score), True, para.GREEN)
+    collected_cookies_val_text = info_font.render(str(collected_cookies), True, para.GREEN2)
+    collected_food_val_text = info_font.render(str(cookie_score), True, para.GREEN2)
     killed_ants_val_text = info_font.render(str(killed_ants), True, para.RED)
     time_val_text = info_font.render(str(time_counter), True, para.BLACK)
 
