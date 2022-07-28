@@ -11,7 +11,7 @@ STEPS_PER_SECOND = 25                   # x updates per second
 COORDS_NEST = (WIDTH / 2, HEIGHT / 2)
 
 # --------------------------------------------ant/ cookie parameters----------------------------------------------
-NUM_START_ANTS = 2
+NUM_START_ANTS = 5
 NUM_START_COOKIES = 1
 
 MAX_NUM_ANTS = 100
@@ -21,7 +21,7 @@ NEW_ANT_CREATION_FREQUENCY = 1          # every x seconds
 NEW_COOKIE_CREATION_FREQUENCY = 3       # every x seconds
 
 MIN_SIZE_COOKIE = 5
-MAX_SIZE_COOKIE = 25
+MAX_SIZE_COOKIE = 20
 
 ANT_VELOCITY = 4                        # in pixels (default value)
 CARRING_VELOCITY = 1                    # in pixels
