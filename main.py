@@ -96,7 +96,8 @@ def update():
         if ant.is_following():
             x = ant.get_followed_ant().get_trail()[ant.get_followed_ant_trail()][0]
             y = ant.get_followed_ant().get_trail()[ant.get_followed_ant_trail()][1]
-            ant.set_angle(calc_angle(ant.get_last_pos()[0], ant.get_last_pos()[1], x, y))
+            if ant.get_last_pos():
+                ant.set_angle(calc_angle(ant.get_last_pos()[0], ant.get_last_pos()[1], x, y))
             ant.set_pos(x, y)
             if ant.get_followed_ant().is_approaching():
                 ant.set_approaching()

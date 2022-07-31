@@ -42,10 +42,6 @@ PURPLE = (153, 0, 153)                  # ant trail
 
 DARKGREY = (30, 30, 30)                 # nest
 
-CYAN = (0, 255, 255)
-YELLOW = (255, 255, 0)
-BLUE = (0, 0, 255)
-
 # --------------------------------------------------images--------------------------------------------------------
 COOKIE_IMG = pygame.image.load('assets/cookie_img.png')
 ANT_IMG = pygame.image.load('assets/ant.png')
